@@ -1,0 +1,8 @@
+[package]
+name = "glitter"
+version = "0.1.0"
+authors = ["Muhannad Alrusayni <0x3UH4224D@gmail.com>"]
+license = "GPL3"
+
+[dependencies]
+iron = "0.6.0"

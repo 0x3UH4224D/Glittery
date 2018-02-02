@@ -1,0 +1,134 @@
+* Design phase
+** Configuration file
+*** Sections
+    | Name                 | comment                                                                                          |
+    |----------------------+--------------------------------------------------------------------------------------------------|
+    | blog                 | All configuration values that effect blog                                                        |
+    | blog.post.org-parser | All configuration values that effect org parser                                                  |
+    | language             | All configuration values that effect languages support                                           |
+    | security             | All configuration values that effect the security in this server                                 |
+    | security.passwords   | All configuration values that effect how to encrypt and hash passwords to store them in database |
+    | security.argon2i     | All parameters to be used with argon2i algorithm                                                 |
+*** Content
+    | Section              | Name             | Type             | Default Value                        | commecnt                                                                                                                                                                |
+    |----------------------+------------------+------------------+--------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | blog                 | public-path      | String           | blog                                 | Path for the blog in the domain, the defualt will be localhost/blog if change this value it will be localhost/NEWPATH                                                   |
+    | blog                 | posts-path       | String           | $HOME/$PROJECTNAME/public-posts      | this folder will contain public posts                                                                                                                                   |
+    |----------------------+------------------+------------------+--------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | language             | numbers          | Array of  String | []                                   | enter your language's numbers if prefer to display them insted of English numbers or leave it empty otherwise. Note: array elements must start 0 and end with 9         |
+    |----------------------+------------------+------------------+--------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | blog.post.org-parser | todo-keywords    | Array of String  | ["TODO", "LATER", "u00007C", "DONE"] | this is TODO keywords for org-parser used to parse blog posts                                                                                                           |
+    | blog.post.org-parser | comment-keyword  | Array of String  | ["COMMENT"]                          | this is keywords that org-parser undrstand as COMMENT keyword that comes before the Headline's title                                                                    |
+    |----------------------+------------------+------------------+--------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | security.passwords   | hasher-algorithm | String           | argon2i                              | Pick one of the supported hash algorithms. current supported hash algorithm is only argon2i                                                                             |
+    |----------------------+------------------+------------------+--------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | security.argon2i     | parallelism      | Number           | 1                                    | Degree of parallelism (i.e. number of threads), Value must be between 1 and 2^24-1                                                                                       |
+    | security.argon2i     | iterations       | Number           | 10                                   | number of iterations to preform. Increasing this froces hashing to longer. Value must be between 1 and 2^32-1                                                            |
+    | security.argon2i     | memory-size-kib  | Number           | 4096                                 | Amount of memory size to use. Increasing this forces hashing to use more memory in order to thwart ASIC-based attacks. Value must be between (8 * iterations) and 2^32-1 |
+    | security.argon2i     | secret-key       | String           | Random text                          | Optional secret key . Value must vaild UTF-8 and have number of bytes between 0 and 2^32-1                                                                               |
+** Logging file
+   TODO
+** Table Schema
+*** users table defintion
+    | column name      | Primary Key | data type           | null-able | default |
+    |------------------+-------------+---------------------+-----------+---------|
+    | id               | YES         | number              | NO        |         |
+    | username         |             | text(25)            | NO        |         |
+    | password         |             | text(64) (32 bytes) | NO        |         |
+    | salt             |             | text(64) (32 bytes) | NO        |         |
+    | photo            |             | blob                | YES       |         |
+    | premission-level |             | number              | NO        |         |
+    Make sure users.password column have proper size/length to store the hashed passwords from our supported hash algorithms
+     32 bytes for argon2 algorithms and SHA256 (64 for TEXT length since each byte will take 2 char, this maybay not correct calc from me)
+** Posts
+   To publish a posts in bolg, it have to be stored in the post-path (varible defined in configuration file under 
+   `blog` section). 
+
+   Posts files should be stored in subfolders in formats like "post-path/YYYY/MM/DD/post-name/post" (e.g.
+   "post-path/2018/01/30/rust-intro/post.org"), so every posts have its own folder.
+
+   By doing that we can add attachments (such as images, videos ..etc) thats belong to that post, and when we need to
+   move or delete posts we simply move or delete its folder and every things belong to that post will be moved or 
+   deleted.
+
+   This approach will make it perrty easy to manage posts even by using 3rd party apps.
+
+   Currently posts can be written in the follwing markup language:
+   * Org (.org)
+   * reStructuredText (.rst)
+   Other markup language may be added later.
+*** TODO Org file structer
+    To write a post using Org markup language, Basic support for [[https://orgmode.org/worg/dev/org-syntax.html][Org Syntax]] is used, most of the keywords are ignored
+    since they are not useful in the context of blog post. When I say it's ignored it meens it can exists but org-parser
+    used in Blog system is just ignoring them.
+
+    Here is a list of things that is ignored:
+    | Category                               | Ignored | Exception                        | Note                                           |
+    |----------------------------------------+---------+----------------------------------+------------------------------------------------|
+    | *Headlines and Section*                | No      | PRIORITY                         |                                                |
+    | *Affiliated Keywords*                  | Yes     | "AUTHOR", "DATE" and "TITLE"     |                                                |
+    | *Greater Blocks*                       | Yes     | =#+BEGIN_SRC LANG ... #+END_SRC= |                                                |
+    | *Drawers and Property Drawers*         | Yes     |                                  |                                                |
+    | *Dynamic Blocks*                       | Yes     |                                  |                                                |
+    | *Footnote Definitions*                 | No      |                                  |                                                |
+    | *Inlinetasks*                          | Yes     |                                  |                                                |
+    | *Plain Lists and Items*                | No      | Tags                             |                                                |
+    | *Property Drawers*                     | Yes     |                                  |                                                |
+    | *Tables*                               | No      |                                  |                                                |
+    | *Babel Call*                           | Yes     |                                  |                                                |
+    | *Blocks*                               | Yes     | =#+BEGIN_SRC LANG ... #+END_SRC= |                                                |
+    | *Clock, Diary Sexp and Planning*       | Yes     |                                  |                                                |
+    | *Comments*                             | Yes     |                                  |                                                |
+    | *Fixed Width Areas*                    | No      |                                  |                                                |
+    | *Horizontal Rules*                     | No      |                                  |                                                |
+    | *Keywords*                             | No      |                                  | There a list of keywords that effect blog post |
+    | *LaTeX Environments*                   | Yes     |                                  |                                                |
+    | *Node Properties*                      | Yes     |                                  |                                                |
+    | *Paragraphs*                           | No      |                                  |                                                |
+    | *Table Rows*                           | No      |                                  |                                                |
+    | *Entities and LaTeX Fragments*         | Yes     |                                  |                                                |
+    | *Export Snippets*                      | Yes     |                                  |                                                |
+    | *Footnote References*                  | No      |                                  |                                                |
+    | *Inline Babel Calls and Source Blocks* | Yes     |                                  |                                                |
+    | *Line Breaks*                          | No      |                                  |                                                |
+    | *Links*                                | No      |                                  |                                                |
+    |                                        |         |                                  |                                                |
+    
+*** TODO reStructuredtext file structer
+    To write a post using reStructuredtext markup language,
+** HowTo Hash passwords
+*** receive password from the SENDER
+    * item 1
+    * [ ] itme 2
+*** load salt from the database
+     
+
+* Glittery Services
+** Blog System
+*** Pick database (MariaDB/SQLite ?)
+*** Pick Hash algorithms for stored passwords
+**** Argon2 and HMAC-SHA256
+**** Other algorithms will be add later when needed
+*** Design URL structer (under /blog)
+**** URL for brosweing posts (Home page)
+**** URL for creating posts
+**** URL for reading posts
+**** URL for controle panle
+*** Create & Design Home Page
+**** add search engine for blog
+**** add button for creating new posts
+**** add button for editing old posts
+*** Create & Design Create Post Page
+**** Add Sync feture with social media service (maybe forums too)
+*** Create & Design Read Post Page
+**** Add functunality to get a copy-past of this post ready to be shared on social media service
+*** Create & Design Controle Panle Page
+**** Design the way controle panle shown (tree-view maybe?)
+**** Add buttons for deleteing and editing/updateing and adding posts
+**** Add buttons for deleteing comments
+*** Create
+** Cloud System
+** Video & Audio Streaming
+** Store System
+
+
