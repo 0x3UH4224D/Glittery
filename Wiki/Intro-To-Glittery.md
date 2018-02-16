@@ -14,13 +14,26 @@ running `glittery --blog --help`, all arguments that belong to blog service shou
 
 The following sections will explain how to use Glittery Blog Service.
 ### Pages
-Glittery let you write your own pages by writing three files, the main file is written using
-[Toml Minimal Language](https://github.com/toml-lang/toml) wich contain the page content.
+Glittery let you write your own pages using [Toml Minimal Language](https://github.com/toml-lang/toml) and
+[Handlebars templates](https://handlebarsjs.com/), that will give you the ability to write customized pages.
 
-TODO: let these three file live in single folder under `pages-path`.
+Every page should have a folder that contains three files, and that folder should be stored in `pages-path` folder, so
+if we want to create **About Me** page, its tree files would look like this:
+```
+pages-path
+└── about-me
+    ├── include.layout
+    ├── page.layout
+    └── page.toml
+```
 
-This file could have any name with `.toml` extension and should be stored in `pages-path` folder, This `.toml` file most
-have table called `[page]` that have the following key/value pairs:
+Glittery will search for pages that have the same tree files, if there are any Glittery will construct an HTML page from
+these files. These files will be explained in the following lines.
+
+the main file is written using [Toml Minimal Language](https://github.com/toml-lang/toml) wich contain two tables
+`[config]` and `[content]`.
+
+`[config]` table is required and is ment to configure the page, the following key/value pairs can be used:
 
 | Key Name            | Type   | Required | Default Value | commecnt                                                                                             |
 |---------------------|--------|----------|---------------|------------------------------------------------------------------------------------------------------|
@@ -28,10 +41,11 @@ have table called `[page]` that have the following key/value pairs:
 | language            | String | No       | en            | Page's language, [list of supported language](https://www.w3schools.com/tags/ref_language_codes.asp) |
 | text-direction      | String | No       | ltr           | change this value to `rtl` if you want Right-To-Left text direction                                  |
 | css-file            | String | No       | default.css   | select css file for this page                                                                        |
-| layout-file         | String | Yes      | Empty String  | select layout file to layout this page                                                               |
-| include-layout-file | String | Yes      | Empty String  | select layout file to layout this page when it's include using `include` helper function             |
 
 **Note**: `glittery` will ignore pages that doesn't fill required key/values such as `title`.
+
+Other values can be define in separate table called `[other]` wich can contain arbirtury
+key/value pairs. These values can be used in layout files that we will see below.
 
 Users can define thier own key/value pairs in separate table called `[other]`, that table can contain arbirtury
 key/value pairs. These values can be used in layout files that we will see below.
