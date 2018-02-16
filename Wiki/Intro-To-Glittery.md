@@ -1,9 +1,9 @@
 # Intro To Glittery
 TODO
 ## Blog Service
-Glittery provides a blogging service that help make your own blog in simple yet powerfull way. It gives you the ability
-to write posts and custom pages such as `About Me` and `Search` pages using 
-[Handlebars templates](https://handlebarsjs.com/), with needing to write a single line of code.
+Glittery provides a blogging service that helps you make your own blog in simple yet powerfull way. It gives you the
+ability to write posts and custom pages such as `About Me` and `Search` pages using 
+[Handlebars templates](https://handlebarsjs.com/), with out writing a single line of code.
 
 Glittery let its users write thier posts in [CommonMark](http://commonmark.org/) and convert these posts to HTML files,
 it also give its users the ability to customize each posts using 
@@ -16,6 +16,8 @@ The following sections will explain how to use Glittery Blog Service.
 ### Pages
 Glittery let you write your own pages by writing three files, the main file is written using
 [Toml Minimal Language](https://github.com/toml-lang/toml) wich contain the page content.
+
+TODO: let these three file live in single folder under `pages-path`.
 
 This file could have any name with `.toml` extension and should be stored in `pages-path` folder, This `.toml` file most
 have table called `[page]` that have the following key/value pairs:
