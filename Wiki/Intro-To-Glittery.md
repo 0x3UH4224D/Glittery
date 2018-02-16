@@ -30,10 +30,10 @@ pages-path
 Glittery will search for pages that have the same tree files, if there are any Glittery will construct an HTML page from
 these files. These files will be explained in the following lines.
 
-the main file is written using [Toml Minimal Language](https://github.com/toml-lang/toml) wich contain two tables
-`[config]` and `[content]`.
+The content of the page goes in `page.toml`, this file is written using
+[Toml Minimal Language](https://github.com/toml-lang/toml) wich contain two tables `[config]` and `[content]`.
 
-`[config]` table is required and is ment to configure the page, the following key/value pairs can be used:
+`[config]` table is **required** and is ment to configure the page, the following key/value pairs can be used:
 
 | Key Name            | Type   | Required | Default Value | commecnt                                                                                             |
 |---------------------|--------|----------|---------------|------------------------------------------------------------------------------------------------------|
@@ -42,24 +42,39 @@ the main file is written using [Toml Minimal Language](https://github.com/toml-l
 | text-direction      | String | No       | ltr           | change this value to `rtl` if you want Right-To-Left text direction                                  |
 | css-file            | String | No       | default.css   | select css file for this page                                                                        |
 
-**Note**: `glittery` will ignore pages that doesn't fill required key/values such as `title`.
+**Note**: `glittery` will ignore pages that doesn't fill required key/values such as `title` or pages that miss `[config]` table.
 
-Other values can be define in separate table called `[other]` wich can contain arbirtury
-key/value pairs. These values can be used in layout files that we will see below.
+`[content]` table is **optional** and is ment to contain the page content that will appaer in the page, users can define
+thier own key/value pairs freely and use these keys inside `page.layout` and `include.layout` to represent thier value.
 
-Users can define thier own key/value pairs in separate table called `[other]`, that table can contain arbirtury
-key/value pairs. These values can be used in layout files that we will see below.
+**Info**: There is no meaning to have page without `[content]` table since they are empty.
 
-That was the main file we talked about, there are two others wich are needed by `layout-file` and `include-layout-file`,
-these files are written using [Handlebars templates](https://handlebarsjs.com/) with `.layout` extension and should be
-stored in `layouts-path`.
+This file called "**Content file**", there are two others files we didn't talk about yet, these files are written using
+[Handlebars templates](https://handlebarsjs.com/) with `.layout` extension.
 
-These two files have the same purpose wich is describing how the `.toml` file content appers in HTML page, but they are
-used in different way, `layout-file` used to construct a standalone HTML page, while `include-layout-file` can be
-embedded into other `.layout` files by using helper function `include` (Helper Functions will be covered in details in
-next chapters).
+These two files have the same purpose wich is describing how the values in "**Content file**" will appaer in HTML page,
+but they are used in different way, `page.layout` used to construct a standalone HTML page, while `include.layout` can
+be embedded into other pages in thier `page.layout` file, and this could be done using helper function called `include`
+(Helper Functions will be covered in details in next chapters).
+
+### Page resources
+Users can easily add resources in thier pages and that coulde be done by adding a new folder called resources in the
+page's folder, and put what ever resources they want to use in that folder, such as images and videos.
+
+The page **About Me**'s folder that uses resources would look like this tree files:
+```
+pages-path
+└── about-me
+    ├── include.layout
+    ├── page.layout
+    ├── page.toml
+	└── resources
+		├── me.png
+		└── CV.pdf
+```
 
 ### Example of how to create 'About Me' page
+
 First we will create `about-me.toml` file that contains the the content we want to see in our **About Me** page:
 ```
 [page]
@@ -364,19 +379,18 @@ TODO
 | security.argon2i     | All parameters to be used with argon2i algorithm                                                 |
 
 ### Content
-| Section            | Key Name         | Type             | Default Value                     | commecnt                                                                                                                                                                 |
-|--------------------|------------------|------------------|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| blog               | public-path      | String           | blog                              | Path for the blog in the domain, the defualt will be localhost/blog if change this value it will be localhost/NEWPATH                                                    |
-| blog               | posts-path       | String           | $HOME/.glittery/blog/posts/       | this folder will contain public posts                                                                                                                                    |
-| blog               | css-path         | String           | $HOME/.glittery/blog/css/         | this folder will contain CSS files                                                                                                                                       |
-| blog               | layouts-path     | String           | $HOME/.glittery/blog/layouts/     | this folder will contain layout files                                                                                                                                    |
+| Section            | Key Name         | Type             | Default Value               | commecnt                                                                                                                                                                 |
+|--------------------|------------------|------------------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| blog               | public-path      | String           | blog                        | Path for the blog in the domain, the defualt will be localhost/blog if change this value it will be localhost/NEWPATH                                                    |
+| blog               | posts-path       | String           | $HOME/.glittery/blog/posts/ | this folder will contain public posts                                                                                                                                    |
+| blog               | css-path         | String           | $HOME/.glittery/blog/css/   | this folder will contain CSS files                                                                                                                                       |
 | blog               | pages-path       | String           | $HOME/.glittery/blog/pages/ | this folder will contain other pages such as `Home` and `About Me` files                                                                                                 |
-| language           | numbers          | Array of  String | []                                | enter your language's numbers if prefer to display them insted of English numbers or leave it empty otherwise. Note: array elements must start 0 and end with 9          |
-| security.passwords | hasher-algorithm | String           | argon2i                           | Pick one of the supported hash algorithms. current supported hash algorithm is only argon2i                                                                              |
-| security.argon2i   | parallelism      | Number           | 1                                 | Degree of parallelism (i.e. number of threads), Value must be between 1 and 2^24-1                                                                                       |
-| security.argon2i   | iterations       | Number           | 10                                | number of iterations to preform. Increasing this froces hashing to longer. Value must be between 1 and 2^32-1                                                            |
-| security.argon2i   | memory-size-kib  | Number           | 4096                              | Amount of memory size to use. Increasing this forces hashing to use more memory in order to thwart ASIC-based attacks. Value must be between (8 * iterations) and 2^32-1 |
-| security.argon2i   | secret-key       | String           | Random text                       | Optional secret key . Value must vaild UTF-8 and have number of bytes between 0 and 2^32-1                                                                               |
+| language           | numbers          | Array of  String | []                          | enter your language's numbers if prefer to display them insted of English numbers or leave it empty otherwise. Note: array elements must start 0 and end with 9          |
+| security.passwords | hasher-algorithm | String           | argon2i                     | Pick one of the supported hash algorithms. current supported hash algorithm is only argon2i                                                                              |
+| security.argon2i   | parallelism      | Number           | 1                           | Degree of parallelism (i.e. number of threads), Value must be between 1 and 2^24-1                                                                                       |
+| security.argon2i   | iterations       | Number           | 10                          | number of iterations to preform. Increasing this froces hashing to longer. Value must be between 1 and 2^32-1                                                            |
+| security.argon2i   | memory-size-kib  | Number           | 4096                        | Amount of memory size to use. Increasing this forces hashing to use more memory in order to thwart ASIC-based attacks. Value must be between (8 * iterations) and 2^32-1 |
+| security.argon2i   | secret-key       | String           | Random text                 | Optional secret key . Value must vaild UTF-8 and have number of bytes between 0 and 2^32-1                                                                               |
 
 # Glittery Services
 ## Cloud System
