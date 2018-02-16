@@ -1,149 +1,74 @@
 # Intro To Glittery
-## Blog System
-### Posts
-Glittery stores posts and thier related files in subfolders under `posts-path`, every posts most have it's own folder
-that contains post.md and info.toml files. 
+TODO
+## Blog Service
+Glittery provides a blogging service that help make your own blog in simple yet powerfull way. It gives you the ability
+to write posts and custom pages such as `About Me` and `Search` pages using 
+[Handlebars templates](https://handlebarsjs.com/), with needing to write a single line of code.
 
-`post.md` file is written in [CommonMark](http://commonmark.org/) a markup language with two extensions, tables and
-footnotes.
+Glittery let its users write thier posts in [CommonMark](http://commonmark.org/) and convert these posts to HTML files,
+it also give its users the ability to customize each posts using 
+[Toml Minimal Language](https://github.com/toml-lang/toml), posts can use CSS files to customize thier look.
 
-`info.toml` file is written in [Toml Minimal Language](https://github.com/toml-lang/toml).
+Users can manage and communicate with blog service using `glittery` command-line interface, you can get help message by
+running `glittery --blog --help`, all arguments that belong to blog service should come after `--blog`.
 
-Posts can use CSS to have nicer look, you can add your own CSS file in `css-path` folder and select it through info.toml
-file as the examples below will show.
+The following sections will explain how to use Glittery Blog Service.
+### Pages
+Glittery let you write your own pages by writing three files, the main file is written using
+[Toml Minimal Language](https://github.com/toml-lang/toml) wich contain the page content.
 
-Glittery uses [Handlebars templates](https://handlebarsjs.com/) to arrange post content in different way, and give you
-the ability to use your own handlebars templates by adding them in `layouts-path` folder and select your layout through
-info.toml as the examples below will show.
+This file could have any name with `.toml` extension and should be stored in `pages-path` folder, This `.toml` file most
+have table called `[page]` that have the following key/value pairs:
 
-Make sure you have default.css in `css-path` and default.layout in `layouts-path` since they are the default for new
-posts or post that didn't selelct css-file and layout-file explicitly. otherwise `glittery` will give error.
+| Key Name            | Type   | Required | Default Value | commecnt                                                                                             |
+|---------------------|--------|----------|---------------|------------------------------------------------------------------------------------------------------|
+| title               | String | Yes      | Empty String  | Page's title                                                                                         |
+| language            | String | No       | en            | Page's language, [list of supported language](https://www.w3schools.com/tags/ref_language_codes.asp) |
+| text-direction      | String | No       | ltr           | change this value to `rtl` if you want Right-To-Left text direction                                  |
+| css-file            | String | No       | default.css   | select css file for this page                                                                        |
+| layout-file         | String | Yes      | Empty String  | select layout file to layout this page                                                               |
+| include-layout-file | String | Yes      | Empty String  | select layout file to layout this page when it's include using `include` helper function             |
 
-Here is a basic post example:
+**Note**: `glittery` will ignore pages that doesn't fill required key/values such as `title`.
+
+Users can define thier own key/value pairs in separate table called `[other]`, that table can contain arbirtury
+key/value pairs. These values can be used in layout files that we will see below.
+
+That was the main file we talked about, there are two others wich are needed by `layout-file` and `include-layout-file`,
+these files are written using [Handlebars templates](https://handlebarsjs.com/) with `.layout` extension and should be
+stored in `layouts-path`.
+
+These two files have the same purpose wich is describing how the `.toml` file content appers in HTML page, but they are
+used in different way, `layout-file` used to construct a standalone HTML page, while `include-layout-file` can be
+embedded into other `.layout` files by using helper function `include` (Helper Functions will be covered in details in
+next chapters).
+
+### Example of how to create 'About Me' page
+First we will create `about-me.toml` file that contains the the content we want to see in our **About Me** page:
 ```
-post-path
-└── Intro To Glittery
-    ├── post.md
-    └── info.toml
-```
-Post content goes into `post.md` file and post info goes into `info.toml` file. Here is the content for them.
+[page]
+title = "About Me"
 
-post.md:
-```
-# Introduction
-Glittery is **Simple yet powerfull** server that can help you start your blog, cloud or sharing your video library.
+# layout file for home page
+layout-file = "about-me-page.layout"
+# I use another layout file to arrange how about-me.toml content will appaer when it's include by other pages.
+include-layout-file = "about-me-box.layout"
 
-# Installtion
-you can visit https://github.com/0x3UH4224D/Glittery for more info.
-```
-
-info.toml:
-```
-# This table/section contain all values that belong to the post it self
-[post]
-# post title
-title = "Intro To Glittery"
-# post summary
-summary = "Introducing Glittery, in short and simple way"
-
-# publishing date
-date = 2018-02-14
-# if you stil editing this post, you can change this to false, so glittery doesn't publish this post until you make it true.
-publish = true
-
-# post tags that will be used by blog search engine.
-tags = [ "intro", "blogging", "server" ]
-```
-
-Resources that is used in post such as images and video files should be stored in subfolder `resources`, the tree files
-then would look like this:
-```
-post-path
-└── Intro To Glittery
-    ├── post.md
-    ├── info.toml
-    └── resources
-        ├── glittery-theme.png
-        └── how-to-make-theme.webm
-```
-By doing that we organize our posts in simple yet elgent way. This approach will make it perrty easy to manage posts 
-even by using 3rd party apps.
-
-#### Publishing posts
-`glittery` makes it pretty easy to publish a posts. let say you want to start a new post with title like **Intro To
-Glittery**, we simply run the following:
-```
-$ glittery --blog --new "Intro To Glittery"
-```
-glittery will take care of that and add a new folder in `post-path` with default values in info.toml and empty post.md
-file, so you can start writing your post. Once you have done wrting your post you can change `publish`'s value to `true`
-in info.toml and your post should be available to others.
-
-#### Deleteing posts
-Some time you want to delete post, to do that simply run the following:
-```
-$ glittery --blog --remove "Intro To Glittery"
-```
-and `glittery` will take care of the rest. **Note** that if there are more than one post that have the same title then
-`glittery` will delete them all, so try not to use the same title.
-
-#### Rename posts
-When you want to rename post's title, tun the following:
-```
-$ glittery --blog -rename "Intro To Glittery" "Blogging With Glittery"
-```
-`glittery` will rename the post "intro To Glittery"'s folder to "Blogging With Glittery" and the `title`'s value in
-info.toml to the new name, so you don't need to rename it twice.
-
-*What if there was two post with the same name/title ?* \
-`glittery` will not rename any of them and you have to do it manual if you really want two posts with the same title.
-
-#### info.toml
-`glittery` need infomation about every posts, so every posts folder should have info.toml that contains infomation
-related to that post.
-
-Here is a full lists of key/values pairs that `glittery` understand. \
-`[post]` table:
-
-| Key Name       | Type            | Default Value  | commecnt                                                                                                                        |
-|----------------|-----------------|----------------|---------------------------------------------------------------------------------------------------------------------------------|
-| title          | String          | Empty String   | Post's title, **Note** when title value's empty then `glittery` will ignore it                                                  |
-| summary        | String          | Empty String   | Post's summary, that wil be shown around the post's title.                                                                      |
-| pinned         | boolean         | false          | Set `true` if you want to pinned this post in top or bottom page, otherwise set it to `false`                                   |
-| language       | String          | en             | Post's language, a list of supported language can be found [here](https://www.w3schools.com/tags/ref_language_codes.asp)        |
-| text-direction | String          | ltr            | change this value to `rtl` if you want Right-To-Left text direction                                                  |
-| date           | Local Date      | current date   | `glittery` will add current date for the local system                                                                           |
-| publish        | Boolean         | false          | set `true` to publish the post, otherwise set it to `false`                                                                     |
-| tags           | Array of String | [ "untaged" ]  | these tags will be used from search engine in this blog, so posts can be filtered using tags                                    |
-| css-file       | String          | default.css    | select css file for this post, this value will be combined with `css-path` and would be `css-path/css-file`                     |
-| layout-file    | String          | default.layout | select layout file to layout this post, this value will be combined with `layouts-path` and would be `layouts-path/layout-file` |
-
-here is an example using some of these key/value pairs.
-``` toml
-# This table/section contain all values that belong to the post it self
-[post]
-# post title
-title = "مدخل إلى Glittery"
-summary = "مقدمة عن Glittery وخصائص وطريقة تشغيلة"
-pinned = true
-language = "ar"
-text-direction = rtl
-
-# publishing date
-date = 2018-02-14
-# if you stil editing this post, you can change this to false, so glittery doesn't publish this post until you make it true.
-publish = true
-
-# post tags that will be used by blog search engine.
-tags = [ "مقدمة", "مقالة", "خادم", "Intro", "server", "artical" ]
-
-# select css file, this value will be combined with `css-path` and would be `css-path/css-file`
-css-file = "dark-theme.css"
-# select layout file, this value will be combined with `layouts-path` and would be `layouts-path/layout-file`
-layout-file = "simple-ui.layout"
+# in this section I can defind whatever key/value pairs I want to represent in about-me-page.layout or
+# about-me-box.layout
+[other]
+name = "Author Name"
+email = "author@email.org"
+description = """
+Here is my description that I want people see in About Me page
+I can write what ever I want.
+"""
 ```
 
-### Other pages
+TODO: stoped here.
+
+---
+
 Pages such as `Home`, `About Me`, `Search`, `Contact` is similer to posts pages they use CSS and Layout, but they
 differ in the way they are represented. They are stored in `pages-path` and using Toml files, the tree files
 then would look like this:
@@ -253,6 +178,146 @@ end up with layout looks like this:
 </html>
 ```
 `glittery` then will look at `include-layout-file` that is in contact.toml file and use it to layout contact.toml.
+
+### Posts
+Glittery stores posts and thier related files in subfolders under `posts-path`, every posts most have it's own folder
+that contains post.md and info.toml files. 
+
+`post.md` file is written in [CommonMark](http://commonmark.org/) a markup language with two extensions, tables and
+footnotes.
+
+`info.toml` file is written in [Toml Minimal Language](https://github.com/toml-lang/toml).
+
+Posts can use CSS to have nicer look, you can add your own CSS file in `css-path` folder and select it through info.toml
+file as the examples below will show.
+
+Glittery uses [Handlebars templates](https://handlebarsjs.com/) to arrange post content in different way, and give you
+the ability to use your own handlebars templates by adding them in `layouts-path` folder and select your layout through
+info.toml as the examples below will show.
+
+Make sure you have default.css in `css-path` since this is the default for new posts or post that didn't selelct
+css-file. otherwise `glittery` will give error.
+
+Here is a basic post example:
+```
+post-path
+└── Intro To Glittery
+    ├── post.md
+    └── info.toml
+```
+Post content goes into `post.md` file and post info goes into `info.toml` file. Here is the content for them.
+
+post.md:
+```
+# Introduction
+Glittery is **Simple yet powerfull** server that can help you start your blog, cloud or sharing your video library.
+
+# Installtion
+you can visit https://github.com/0x3UH4224D/Glittery for more info.
+```
+
+info.toml:
+```
+# This table/section contain all values that belong to the post it self
+[post]
+# post title
+title = "Intro To Glittery"
+# post summary
+summary = "Introducing Glittery, in short and simple way"
+
+# publishing date
+date = 2018-02-14
+# if you stil editing this post, you can change this to false, so glittery doesn't publish this post until you make it true.
+publish = true
+
+# post tags that will be used by blog search engine.
+tags = [ "intro", "blogging", "server" ]
+```
+
+Resources that is used in post such as images and video files should be stored in subfolder `resources`, the tree files
+then would look like this:
+```
+post-path
+└── Intro To Glittery
+    ├── post.md
+    ├── info.toml
+    └── resources
+        ├── glittery-theme.png
+        └── how-to-make-theme.webm
+```
+By doing that we organize our posts in simple yet elgent way. This approach will make it perrty easy to manage posts 
+even by using 3rd party apps.
+
+#### Publishing posts
+`glittery` makes it pretty easy to publish a posts. let say you want to start a new post with title like **Intro To
+Glittery**, we simply run the following:
+```
+$ glittery --blog --new "Intro To Glittery"
+```
+glittery will take care of that and add a new folder in `post-path` with default values in info.toml and empty post.md
+file, so you can start writing your post. Once you have done wrting your post you can change `publish`'s value to `true`
+in info.toml and your post should be available to others.
+
+#### Deleteing posts
+Some time you want to delete post, to do that simply run the following:
+```
+$ glittery --blog --remove "Intro To Glittery"
+```
+and `glittery` will take care of the rest. **Note** that if there are more than one post that have the same title then
+`glittery` will delete them all, so try not to use the same title.
+
+#### Rename posts
+When you want to rename post's title, tun the following:
+```
+$ glittery --blog -rename "Intro To Glittery" "Blogging With Glittery"
+```
+`glittery` will rename the post "intro To Glittery"'s folder to "Blogging With Glittery" and the `title`'s value in
+info.toml to the new name, so you don't need to rename it twice.
+
+*What if there was two post with the same name/title ?* \
+`glittery` will not rename any of them and you have to do it manual if you really want two posts with the same title.
+
+#### info.toml
+`glittery` need infomation about every posts, so every posts folder should have info.toml that contains infomation
+related to that post.
+
+Here is a full lists of key/values pairs that `glittery` understand. \
+`[post]` table:
+
+| Key Name       | Type            | Default Value  | commecnt                                                                                                                        |
+|----------------|-----------------|----------------|---------------------------------------------------------------------------------------------------------------------------------|
+| title          | String          | Empty String   | Post's title, **Note** when title value's empty then `glittery` will ignore it                                                  |
+| summary        | String          | Empty String   | Post's summary, that wil be shown around the post's title.                                                                      |
+| pinned         | boolean         | false          | Set `true` if you want to pinned this post in top or bottom page, otherwise set it to `false`                                   |
+| language       | String          | en             | Post's language, a list of supported language can be found [here](https://www.w3schools.com/tags/ref_language_codes.asp)        |
+| text-direction | String          | ltr            | change this value to `rtl` if you want Right-To-Left text direction                                                  |
+| date           | Local Date      | current date   | `glittery` will add current date for the local system                                                                           |
+| publish        | Boolean         | false          | set `true` to publish the post, otherwise set it to `false`                                                                     |
+| tags           | Array of String | [ "untaged" ]  | these tags will be used from search engine in this blog, so posts can be filtered using tags                                    |
+| css-file       | String          | default.css    | select css file for this post, this value will be combined with `css-path` and would be `css-path/css-file`                     |
+
+here is an example using some of these key/value pairs.
+``` toml
+# This table/section contain all values that belong to the post it self
+[post]
+# post title
+title = "مدخل إلى Glittery"
+summary = "مقدمة عن Glittery وخصائص وطريقة تشغيلة"
+pinned = true
+language = "ar"
+text-direction = rtl
+
+# publishing date
+date = 2018-02-14
+# if you stil editing this post, you can change this to false, so glittery doesn't publish this post until you make it true.
+publish = true
+
+# post tags that will be used by blog search engine.
+tags = [ "مقدمة", "مقالة", "خادم", "Intro", "server", "artical" ]
+
+# select css file, this value will be combined with `css-path` and would be `css-path/css-file`
+css-file = "dark-theme.css"
+```
 
 ### Layout your posts
 ### CSS your posts
