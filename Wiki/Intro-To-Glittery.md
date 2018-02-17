@@ -17,86 +17,139 @@ The following sections will explain how to use Glittery Blog Service.
 Glittery let you write your own pages using [Toml Minimal Language](https://github.com/toml-lang/toml) and
 [Handlebars templates](https://handlebarsjs.com/), that will give you the ability to write customized pages.
 
-Every page should have a folder that contains three files, and that folder should be stored in `pages-path` folder, so
-if we want to create **About Me** page, its tree files would look like this:
-```
+Every page should have a folder that contains three files, and the name of that folder is the `id` for that page, this
+folder should be stored in `pages-path` folder, so if we want to create **About Me** page, its tree files would look
+like this:
+``` sh
 pages-path
-└── about-me
+└── about-me                  # The page's folder, it's name is the 'id' for this page
     ├── include.layout
     ├── page.layout
-    └── page.toml
+    └── content.toml
 ```
 
-Glittery will search for pages that have the same tree files, if there are any Glittery will construct an HTML page from
-these files. These files will be explained in the following lines.
+Page's `id` can be any unicode character except those are not considered valid by
+[Identifiers in handlebars](https://handlebarsjs.com/expressions.html), Glittery will ignore pages with `id` that
+contain any of them.
 
-The content of the page goes in `page.toml`, this file is written using
+All these files are required to construct an HTML page, and any page that does miss any of them will be ignored by
+Glittery. These files will be explained in the following lines.
+
+#### content.toml File
+The content of the page goes in `content.toml`, this file is written using
 [Toml Minimal Language](https://github.com/toml-lang/toml) wich contain two tables `[config]` and `[content]`.
 
-`[config]` table is **required** and is ment to configure the page, the following key/value pairs can be used:
+`[config]` table is **required** and is ment to configure the page, the following key/value pairs can be used inside
+this table:
 
-| Key Name            | Type   | Required | Default Value | commecnt                                                                                             |
-|---------------------|--------|----------|---------------|------------------------------------------------------------------------------------------------------|
-| title               | String | Yes      | Empty String  | Page's title                                                                                         |
-| language            | String | No       | en            | Page's language, [list of supported language](https://www.w3schools.com/tags/ref_language_codes.asp) |
-| text-direction      | String | No       | ltr           | change this value to `rtl` if you want Right-To-Left text direction                                  |
-| css-file            | String | No       | default.css   | select css file for this page                                                                        |
+| Key Name       | Type   | Required | Default Value | commecnt                                                                                               |
+|----------------|--------|----------|---------------|--------------------------------------------------------------------------------------------------------|
+| title          | String | Yes      | Empty String  | Page's title                                                                                           |
+| language       | String | No       | en            | Page's language, ([list of supported language](https://www.w3schools.com/tags/ref_language_codes.asp)) |
+| text-direction | String | No       | ltr           | change this value to `rtl` if you want Right-To-Left text direction                                    |
+| css-file       | String | No       | default.css   | select css file for this page                                                                          |
 
-**Note**: `glittery` will ignore pages that doesn't fill required key/values such as `title` or pages that miss `[config]` table.
+**Note**: Glittery will ignore pages that doesn't fill required key/values such as `title` or pages that miss `[config]`
+table.
 
-`[content]` table is **optional** and is ment to contain the page content that will appaer in the page, users can define
-thier own key/value pairs freely and use these keys inside `page.layout` and `include.layout` to represent thier value.
+`[content]` table is **optional** and is ment to contain the page content that will appaer in the HTML page, users can
+define thier own key/value pairs freely in this table and use these keys inside `page.layout` and `include.layout` to
+represent thier value.
 
-**Info**: There is no meaning to have page without `[content]` table since they are empty.
+**Info**: There is no meaning to have page without `[content]` table since the HTML page won't have any content.
 
-This file called "**Content file**", there are two others files we didn't talk about yet, these files are written using
-[Handlebars templates](https://handlebarsjs.com/) with `.layout` extension.
+**Note**: Keys names may be any unicode character except those considered invalid characters by [Identifiers in
+handlebars](https://handlebarsjs.com/expressions.html) in thier key names. and Glittery will ignore any key that have
+invalid character and it's value won't be accessable by `page.layout` and `include.layout`.
 
-These two files have the same purpose wich is describing how the values in "**Content file**" will appaer in HTML page,
-but they are used in different way, `page.layout` used to construct a standalone HTML page, while `include.layout` can
-be embedded into other pages in thier `page.layout` file, and this could be done using helper function called `include`
-(Helper Functions will be covered in details in next chapters).
+#### page.layout & include.layout Files
+there are two others files we didn't talk about yet, these files are
+written using [Handlebars templates](https://handlebarsjs.com/) with `.layout` extension.
 
-### Page resources
-Users can easily add resources in thier pages and that coulde be done by adding a new folder called resources in the
-page's folder, and put what ever resources they want to use in that folder, such as images and videos.
+These two files have the same purpose wich is describing how the values in `content.toml` file will appaer in HTML page,
+but they are used in different way, `page.layout` together with `content.toml` used to construct a standalone HTML page,
+while `include.layout` together with `content.toml` used to create an HTML chunk that can be embedded into other pages
+in thier `page.layout` file, and this could be done using helper function called `include` (Helper Functions will be
+covered in details in next chapters).
 
-The page **About Me**'s folder that uses resources would look like this tree files:
-```
+#### Page Resources
+Users can easily add `resources` in thier pages and that could be done by adding a new folder called resources in the
+page's folder, and put what ever resources they want to use in thier page inside `resources` folder, such as images and
+videos.
+
+The **About Me**'s tree files would look like this when we add some resources:
+``` sh
 pages-path
 └── about-me
     ├── include.layout
     ├── page.layout
-    ├── page.toml
+    ├── content.toml
 	└── resources
 		├── me.png
 		└── CV.pdf
 ```
 
-### Example of how to create 'About Me' page
-
-First we will create `about-me.toml` file that contains the the content we want to see in our **About Me** page:
-```
-[page]
-title = "About Me"
-
-# layout file for home page
-layout-file = "about-me-page.layout"
-# I use another layout file to arrange how about-me.toml content will appaer when it's include by other pages.
-include-layout-file = "about-me-box.layout"
-
-# in this section I can defind whatever key/value pairs I want to represent in about-me-page.layout or
-# about-me-box.layout
-[other]
-name = "Author Name"
-email = "author@email.org"
-description = """
-Here is my description that I want people see in About Me page
-I can write what ever I want.
-"""
+#### Example of how to create 'About Me' page
+Good news that `glittery` command-line interface can take care of creating all files and folders we need to start wrting
+our pages, and that could be done by running the following:
+``` sh
+$ glittery --blog --new-page [PAGE_ID]
 ```
 
-TODO: stoped here.
+so we can easily create our **About Me** page by running the following:
+``` sh
+$ glittery --blog --new-page about-me
+```
+this will create a new page that have the three files:
+``` sh
+pages-path
+└── about-me
+    ├── include.layout
+    ├── page.layout
+    └── content.toml
+```
+and these files will have the default values.
+`content.toml` will look like this:
+``` toml
+[config]
+title = "about-me"
+```
+
+`page.layout` will look like this:
+``` html
+<!doctype html>
+<html lang="{{config.language}}">
+    <head>
+        <meta charset="UTF-8"/>
+	<link rel="stylesheet" href="{{link config.css-file}}">
+        <title>{{config.title}}</title>
+    </head>
+    <body style="direction: {{config.page-direction}}">
+
+    </body>
+</html>
+```
+
+`include.layout` will contain:
+``` html
+<div class="{{config.page-id}}" style="direction: {{config.page-direction}}">
+
+</div>
+```
+
+Now we start edting these files as we want, and we will start by adding so key/value pairs in `content.toml` file, so it
+would looks like this:
+``` toml
+[config]
+title = "about-me"
+
+[content]
+name = "Muhannad Alrusayni"
+email = "muhannad.alrusayni@gmail.com"
+skills = [ "Programming", "UI Design", "Vector Design", "Photography" ]
+```
+
+TODO: Stoped here.
 
 ---
 
@@ -191,7 +244,7 @@ other pages in Home page, I would write this in home-page.layout:
 And then I select home-page.layout as layout-file for my home.toml, `glittery` will replace `link` function with desired
 link for eash page.
 
-`include` take the same argument as `link` but it include the output from combining page.toml file and it's
+`include` take the same argument as `link` but it include the output from combining content.toml file and it's
 `include-layout-file`, so if we want to include our contact.toml content into our home.toml's `layout-file`, we would
 end up with layout looks like this:
 ``` html
