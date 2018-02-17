@@ -39,7 +39,7 @@ Glittery. These files will be explained in the following lines.
 The content of the page goes in `content.toml`, this file is written using
 [Toml Minimal Language](https://github.com/toml-lang/toml) wich contain two tables `[config]` and `[content]`.
 
-`[config]` table is **required** and is ment to configure the page, the following key/value pairs can be used inside
+The `[config]` table is **required** and is ment to configure the page, the following key/value pairs can be used inside
 this table:
 
 | Key Name       | Type   | Required | Default Value | commecnt                                                                                               |
@@ -49,10 +49,13 @@ this table:
 | text-direction | String | No       | ltr           | change this value to `rtl` if you want Right-To-Left text direction                                    |
 | css-file       | String | No       | default.css   | select css file for this page                                                                          |
 
-**Note**: Glittery will ignore pages that doesn't fill required key/values such as `title` or pages that miss `[config]`
-table.
+**Note**: Glittery will ignore pages that doesn't fill required key/values pairs such as `title` or pages that miss
+`[config]` table.
 
-`[content]` table is **optional** and is ment to contain the page content that will appaer in the HTML page, users can
+**Note**: the key name `page-id` is  already reserved, and it's value is the page id (the page folder's name). So you
+can use that name for any key in `[config]` table.
+
+The `[content]` table is **optional** and is ment to contain the page content that will appaer in the HTML page, users can
 define thier own key/value pairs freely in this table and use these keys inside `page.layout` and `include.layout` to
 represent thier value.
 
@@ -84,23 +87,24 @@ pages-path
     ├── include.layout
     ├── page.layout
     ├── content.toml
-	└── resources
-		├── me.png
-		└── CV.pdf
+    └── resources
+        ├── me.png
+        └── CV.pdf
 ```
 
 #### Example of how to create 'About Me' page
 Good news that `glittery` command-line interface can take care of creating all files and folders we need to start wrting
-our pages, and that could be done by running the following:
+our pages, and that could be done by running:
 ``` sh
 $ glittery --blog --new-page [PAGE_ID]
 ```
 
-so we can easily create our **About Me** page by running the following:
+So we can create our **About Me** page by running:
 ``` sh
 $ glittery --blog --new-page about-me
 ```
-this will create a new page that have the three files:
+
+this will create a new folder that have three files:
 ``` sh
 pages-path
 └── about-me
@@ -108,7 +112,9 @@ pages-path
     ├── page.layout
     └── content.toml
 ```
+
 and these files will have the default values.
+
 `content.toml` will look like this:
 ``` toml
 [config]
@@ -137,7 +143,7 @@ title = "about-me"
 </div>
 ```
 
-Now we start edting these files as we want, and we will start by adding so key/value pairs in `content.toml` file, so it
+Now we start edting these files as we want, and we will start by adding some key/value pairs in `content.toml` file, so it
 would looks like this:
 ``` toml
 [config]
