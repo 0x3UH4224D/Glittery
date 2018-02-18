@@ -23,8 +23,8 @@ like this:
 ``` sh
 pages-path
 └── about-me                  # The page's folder, it's name is the 'id' for this page
-    ├── include.layout
-    ├── page.layout
+    ├── include.hbs
+    ├── page.hbs
     └── content.toml
 ```
 
@@ -56,23 +56,23 @@ this table:
 can use that name for any key in `[config]` table.
 
 The `[content]` table is **optional** and is ment to contain the page content that will appaer in the HTML page, users can
-define thier own key/value pairs freely in this table and use these keys inside `page.layout` and `include.layout` to
+define thier own key/value pairs freely in this table and use these keys inside `page.hbs` and `include.hbs` to
 represent thier value.
 
 **Info**: There is no meaning to have page without `[content]` table since the HTML page won't have any content.
 
 **Note**: Keys names may be any unicode character except those considered invalid characters by [Identifiers in
 handlebars](https://handlebarsjs.com/expressions.html) in thier key names. and Glittery will ignore any key that have
-invalid character and it's value won't be accessable by `page.layout` and `include.layout`.
+invalid character and it's value won't be accessable by `page.hbs` and `include.hbs`.
 
-#### page.layout & include.layout Files
+#### page.hbs & include.hbs Files
 there are two others files we didn't talk about yet, these files are
-written using [Handlebars templates](https://handlebarsjs.com/) with `.layout` extension.
+written using [Handlebars templates](https://handlebarsjs.com/) with `.hbs` extension.
 
 These two files have the same purpose wich is describing how the values in `content.toml` file will appaer in HTML page,
-but they are used in different way, `page.layout` together with `content.toml` used to construct a standalone HTML page,
-while `include.layout` together with `content.toml` used to create an HTML chunk that can be embedded into other pages
-in thier `page.layout` file, and this could be done using helper function called `include` (Helper Functions will be
+but they are used in different way, `page.hbs` together with `content.toml` used to construct a standalone HTML page,
+while `include.hbs` together with `content.toml` used to create an HTML chunk that can be embedded into other pages
+in thier `page.hbs` file, and this could be done using helper function called `include` (Helper Functions will be
 covered in details in next chapters).
 
 #### Page Resources
@@ -84,8 +84,8 @@ The **About Me**'s tree files would look like this when we add some resources:
 ``` sh
 pages-path
 └── about-me
-    ├── include.layout
-    ├── page.layout
+    ├── include.hbs
+    ├── page.hbs
     ├── content.toml
     └── resources
         ├── me.png
@@ -108,8 +108,8 @@ this will create a new folder that have three files:
 ``` sh
 pages-path
 └── about-me
-    ├── include.layout
-    ├── page.layout
+    ├── include.hbs
+    ├── page.hbs
     └── content.toml
 ```
 
@@ -121,7 +121,7 @@ and these files will have the default values.
 title = "about-me"
 ```
 
-`page.layout` will look like this:
+`page.hbs` will look like this:
 ``` html
 <!doctype html>
 <html lang="{{config.language}}">
@@ -136,7 +136,7 @@ title = "about-me"
 </html>
 ```
 
-`include.layout` will contain:
+`include.hbs` will contain:
 ``` html
 <div class="{{config.page-id}}" style="direction: {{config.page-direction}}">
 
@@ -154,6 +154,7 @@ name = "Muhannad Alrusayni"
 email = "muhannad.alrusayni@gmail.com"
 skills = [ "Programming", "UI Design", "Vector Design", "Photography" ]
 ```
+
 
 TODO: Stoped here.
 
@@ -191,11 +192,11 @@ title = "About Me"
 language = "en"
 
 # I use separate layout file for home page
-layout-file = "about-me-page.layout"
+layout-file = "about-me-page.hbs"
 # I use another layout file to arrange how about-me.toml content will appaer when it's include by other pages.
-include-layout-file = "about-me-box.layout"
+include-layout-file = "about-me-box.hbs"
 
-# in this section I can defind whatever key/value pairs I want to represent using home.layout
+# in this section I can defind whatever key/value pairs I want to represent using home.hbs
 [other]
 name = "Author Name"
 email = "author@example.org"
@@ -204,7 +205,7 @@ Here is my description that I want people see in About Me page
 I can write what ever I want.
 """
 ```
-In the other side, about-me-page.layout file should be in `layouts-path` folder, and that layout would looks like this:
+In the other side, about-me-page.hbs file should be in `layouts-path` folder, and that layout would looks like this:
 ``` html
 <!doctype html>
 <html lang="{{language}}">
@@ -227,7 +228,7 @@ Now that we have done this simple example using about-me page, all other pages f
 control over page content.
 
 `link` take one argument that is the the file name of the page, so if I want to have link to about-me.toml page and
-other pages in Home page, I would write this in home-page.layout:
+other pages in Home page, I would write this in home-page.hbs:
 ``` html
 <!doctype html>
 <html lang="{{language}}">
@@ -247,7 +248,7 @@ other pages in Home page, I would write this in home-page.layout:
 	</body>
 </html>
 ```
-And then I select home-page.layout as layout-file for my home.toml, `glittery` will replace `link` function with desired
+And then I select home-page.hbs as layout-file for my home.toml, `glittery` will replace `link` function with desired
 link for eash page.
 
 `include` take the same argument as `link` but it include the output from combining content.toml file and it's
