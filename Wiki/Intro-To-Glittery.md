@@ -42,12 +42,10 @@ The content of the page goes in `content.toml`, this file is written using
 The `[config]` table is **required** and is ment to configure the page, the following key/value pairs can be used inside
 this table:
 
-| Key Name       | Type   | Required | Default Value | commecnt                                                                                               |
-|----------------|--------|----------|---------------|--------------------------------------------------------------------------------------------------------|
-| title          | String | Yes      | Empty String  | Page's title                                                                                           |
-| language       | String | No       | en            | Page's language, ([list of supported language](https://www.w3schools.com/tags/ref_language_codes.asp)) |
-| text-direction | String | No       | ltr           | change this value to `rtl` if you want Right-To-Left text direction                                    |
-| css-file       | String | No       | default.css   | select css file for this page                                                                          |
+| Key Name | Type   | Required | Default Value | commecnt                                                                                                   |
+|----------|--------|----------|---------------|------------------------------------------------------------------------------------------------------------|
+| url      | String | No       | `page-id`     | this is the url for this page, so value like 'about-me' would have url like http://localhost/blog/about-me |
+| type     | String | No       | dynamic       | this is the type of the page,                                                                                |
 
 **Note**: Glittery will ignore pages that doesn't fill required key/values pairs such as `title` or pages that miss
 `[config]` table.
@@ -57,7 +55,7 @@ can use that name for any key in `[config]` table.
 
 The `[content]` table is **optional** and is ment to contain the page content that will appaer in the HTML page, users can
 define thier own key/value pairs freely in this table and use these keys inside `page.hbs` and `include.hbs` to
-represent thier value.
+represent thier 
 
 **Info**: There is no meaning to have page without `[content]` table since the HTML page won't have any content.
 
@@ -127,23 +125,25 @@ title = "about-me"
 <html lang="{{config.language}}">
     <head>
         <meta charset="UTF-8"/>
-	<link rel="stylesheet" href="{{link config.css-file}}">
+        <link rel="stylesheet" href="{{link config.css-file}}">
         <title>{{config.title}}</title>
     </head>
-    <body style="direction: {{config.page-direction}}">
+    <body>
+        <div class="about-me">
 
+        </div>	
     </body>
 </html>
 ```
 
 `include.hbs` will contain:
 ``` html
-<div class="{{config.page-id}}" style="direction: {{config.page-direction}}">
+<div class="{{config.page-id}}">
 
 </div>
 ```
 
-Now we start edting these files as we want, and we will start by adding some key/value pairs in `content.toml` file, so it
+Now we start edting these files to suite our need, and we will start by adding some key/value pairs in `content.toml` file, so it
 would looks like this:
 ``` toml
 [config]
@@ -151,76 +151,52 @@ title = "about-me"
 
 [content]
 name = "Muhannad Alrusayni"
+description = """
+I can write what ever I want here to use it as description in my About Me page.
+I can write more than one line to...
+"""
 email = "muhannad.alrusayni@gmail.com"
-skills = [ "Programming", "UI Design", "Vector Design", "Photography" ]
 ```
+
+Then we will add these keys into our `page.hbs`, so it would look like this:
+``` html
+<!doctype html>
+<html lang="{{config.language}}">
+    <head>
+        <meta charset="UTF-8"/>
+        <link rel="stylesheet" href="{{link config.css-file}}">
+        <title>{{config.title}}</title>
+    </head>
+    <body>
+        <div class="about-me">
+            <h1>I am {{name}}</h1>
+            <p>
+                {{description}}<br>
+                Feel free to <a href="mailto:{{email}}">email</a> me if you have any question.
+            </p>
+        </div>	
+    </body>
+</html>
+```
+
+And the same goes with `include.hbs`:
 
 
 TODO: Stoped here.
+``` html
+<div class="about-me">
+    <h1>I am {{name}}</h1>
+    <p>
+        {{description}}<br>
+        Feel free to <a href="mailto:{{email}}">email</a> me if you have any question.
+    </p>
+</div>	
+```
+
+
 
 ---
 
-Pages such as `Home`, `About Me`, `Search`, `Contact` is similer to posts pages they use CSS and Layout, but they
-differ in the way they are represented. They are stored in `pages-path` and using Toml files, the tree files
-then would look like this:
-```
-pages-path
-├── home.toml
-├── about-me.toml
-├── search.toml
-└── contact.toml
-```
-Every file of these should have at less section/table called `[page]`, and that section can have any key/value pairs of
-the following list:
-
-| Key Name            | Type   | Default Value | commecnt                                                                                                                           |
-|---------------------|--------|---------------|------------------------------------------------------------------------------------------------------------------------------------|
-| title               | String | Empty String  | Post's title, **Note** when title value's empty then `glittery` will ignore it                                                     |
-| language            | String | en            | Post's language, a list of supported language can be found [here](https://www.w3schools.com/tags/ref_language_codes.asp)           |
-| text-direction      | String | ltr           | change this value to `rtl` if you want Right-To-Left text direction                                                                |
-| css-file            | String | default.css   | select css file for this page, this value will be combined with `css-path` and would be `css-path/css-file`                        |
-| layout-file         | String | Empty String  | select layout file to layout this page, this value will be combined with `layouts-path` and would be `layouts-path/layout-file`    |
-| include-layout-file | String | Empty String  | select layout file to layout this page, this file will be used by helper function `include` so you can layout this page in two way |
-
-You can also defind your own key/value pairs in separate section/table called `[other]` and use these keys you have
-defind in your layout files to represent thier values.
-
-Here is an example of `about-me.toml` file:
-```
-[page]
-title = "About Me"
-language = "en"
-
-# I use separate layout file for home page
-layout-file = "about-me-page.hbs"
-# I use another layout file to arrange how about-me.toml content will appaer when it's include by other pages.
-include-layout-file = "about-me-box.hbs"
-
-# in this section I can defind whatever key/value pairs I want to represent using home.hbs
-[other]
-name = "Author Name"
-email = "author@example.org"
-description = """
-Here is my description that I want people see in About Me page
-I can write what ever I want.
-"""
-```
-In the other side, about-me-page.hbs file should be in `layouts-path` folder, and that layout would looks like this:
-``` html
-<!doctype html>
-<html lang="{{language}}">
-    <head>
-		<meta charset="UTF-8"/>
-		<link rel="stylesheet" href="{{blog.css-path}}{{css-file}}">
-		<title>{{title}}</title>
-    </head>
-    <body style="direction: {{text-direction}}">
-		<h1>I'm {{name}}</h1>
-		{{description}}<br>
-		<a href="mailto:{{email}}">Contact Me</a>
-	</body>
-</html>
-```
 Now that we have done this simple example using about-me page, all other pages follow the same method.
 
 *You may ask how to include or link these pages to my blog pages ?* \
@@ -410,7 +386,6 @@ tags = [ "مقدمة", "مقالة", "خادم", "Intro", "server", "artical" ]
 css-file = "dark-theme.css"
 ```
 
-### Layout your posts
 ### CSS your posts
 ## Table Schema
 ### users table defintion
