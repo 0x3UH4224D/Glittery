@@ -2,12 +2,14 @@
 TODO
 ## Blog Service
 Glittery provides a blogging service that helps you make your own blog in simple yet powerfull way. It gives you the
-ability to write posts and custom pages such as `About Me` and `Search` pages using 
-[Handlebars templates](https://handlebarsjs.com/), with out writing a single line of code.
+ability to write custom pages such as `About Me` and `Search` pages using 
+[Handlebars templates](https://handlebarsjs.com/), with a tons of helper functions.
 
 Glittery let its users write thier posts in [CommonMark](http://commonmark.org/) and convert these posts to HTML files,
 it also give its users the ability to customize each posts using 
-[Toml Minimal Language](https://github.com/toml-lang/toml), posts can use CSS files to customize thier look.
+[Toml Minimal Language](https://github.com/toml-lang/toml)
+
+Both pages and posts can use CSS files to customize thier look and feel.
 
 Users can manage and communicate with blog service using `glittery` command-line interface, you can get help message by
 running `glittery --blog --help`, all arguments that belong to blog service should come after `--blog`.
@@ -23,7 +25,7 @@ like this:
 ``` sh
 pages-path
 └── about-me                  # The page's folder, it's name is the 'id' for this page
-    ├── include.hbs
+    ├── partial.hbs
     ├── page.hbs
     └── content.toml
 ```
@@ -54,24 +56,24 @@ this table:
 can use that name for any key in `[config]` table.
 
 The `[content]` table is **optional** and is ment to contain the page content that will appaer in the HTML page, users can
-define thier own key/value pairs freely in this table and use these keys inside `page.hbs` and `include.hbs` to
+define thier own key/value pairs freely in this table and use these keys inside `page.hbs` and `partial.hbs` to
 represent thier 
 
 **Info**: There is no meaning to have page without `[content]` table since the HTML page won't have any content.
 
 **Note**: Keys names may be any unicode character except those considered invalid characters by [Identifiers in
 handlebars](https://handlebarsjs.com/expressions.html) in thier key names. and Glittery will ignore any key that have
-invalid character and it's value won't be accessable by `page.hbs` and `include.hbs`.
+invalid character and it's value won't be accessable by `page.hbs` and `partial.hbs`.
 
-#### page.hbs & include.hbs Files
+#### page.hbs & partial.hbs Files
 there are two others files we didn't talk about yet, these files are
 written using [Handlebars templates](https://handlebarsjs.com/) with `.hbs` extension.
 
 These two files have the same purpose wich is describing how the values in `content.toml` file will appaer in HTML page,
 but they are used in different way, `page.hbs` together with `content.toml` used to construct a standalone HTML page,
-while `include.hbs` together with `content.toml` used to create an HTML chunk that can be embedded into other pages
-in thier `page.hbs` file, and this could be done using helper function called `include` (Helper Functions will be
-covered in details in next chapters).
+while `partial.hbs` together with `content.toml` used to create an HTML chunk that can be embedded into other pages
+in thier `page.hbs` file, and this could be done by adding `{{> [PAGEID]-partial PAGEID }}` (this will be covered in
+details in next chapters).
 
 #### Page Resources
 Users can easily add `resources` in thier pages and that could be done by adding a new folder called resources in the
@@ -82,7 +84,7 @@ The **About Me**'s tree files would look like this when we add some resources:
 ``` sh
 pages-path
 └── about-me
-    ├── include.hbs
+    ├── partial.hbs
     ├── page.hbs
     ├── content.toml
     └── resources
@@ -106,7 +108,7 @@ this will create a new folder that have three files:
 ``` sh
 pages-path
 └── about-me
-    ├── include.hbs
+    ├── partial.hbs
     ├── page.hbs
     └── content.toml
 ```
@@ -136,7 +138,7 @@ title = "about-me"
 </html>
 ```
 
-`include.hbs` will contain:
+`partial.hbs` will contain:
 ``` html
 <div class="{{config.page-id}}">
 
@@ -179,7 +181,7 @@ Then we will add these keys into our `page.hbs`, so it would look like this:
 </html>
 ```
 
-And the same goes with `include.hbs`:
+And the same goes with `partial.hbs`:
 
 
 TODO: Stoped here.
