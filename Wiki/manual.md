@@ -49,11 +49,7 @@ pages-path
 
 Page's `page-id` can be any unicode character except those are not considered valid by
 [Identifiers in handlebars](https://handlebarsjs.com/expressions.html):
-`Whitespace` `!` `"` `#` `%` `&` `'` `(` `)` `*` `+` `,` `.` `/` `;` `<` `=` `>` `@` `[` `\` `]` `^`
-```
-`
-```
-`{` `|` `}` `~`
+`Whitespace` `!` `"` `#` `%` `&` `'` `(` `)` `*` `+` `,` `.` `/` `;` `<` `=` `>` `@` `[` `\` `]` `^` ``` ` ``` `{` `|` `}` `~`
 Glittery will ignore pages with `page-id` that contain any of them.
 
 Only `template.hbs`, `partial.hbs` and `content.toml` are required, `resources` folder are optional, `.status` folder will
