@@ -350,22 +350,70 @@ language = "en"
 
 # This is the page's title that will be used in the HTML file
 title = "Home"
-# intrest topics in this blog blog
-intrest = "I write my artical here, most of my articals are about programming, photography and 3D modeling"
-# my github page
-github-url = "https://github.com/0x3UH4224D/"
-github-name = "0x3UH4224D"
+
+my-name = "Muhannad Alrusayni"
+my-short-name = "M.Alrusayni"
+# blog's topics
+intrest = "Programming ꞏ UI Design ꞏ Photography ꞏ 3D Moduleing"
 ```
 
 Now let's fillup `template.hbs` file, with the following:
 ``` html
 <!doctype html>
-<html lang="en">
+<html lang="{{ language }}">
     <head>
-        <meta charset="UTF-8"/>
-        <title>Document</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- import Bulma CSS library -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css">
+        <title>{{ title }}</title>
     </head>
-    <body></body>
+    <body>
+        <!-- header -->
+        <section class="hero is-dark">
+            <!-- hero content -->
+            <div class="hero-body">
+                <!-- Title for big screen -->
+                <div class="container has-text-centered is-hidden-mobile">
+                    <h1 class="title">{{ my-name }}</h1>
+                    <h2 class="subtitle is-capitalized has-text-weight-light">
+                        {{ intrest }}
+                    </h2>
+                </div>
+                <!-- Title for small screen -->
+                <div class="container has-text-centered is-hidden-tablet">
+                    <h1 class="title">{{ my-short-name }}</h1>
+                    <small class="is-capitalized has-text-weight-light">
+                        {{ intrest }}
+                    </small>
+                </div>
+            </div>
+            <!-- links to my blog pages -->
+            <div class="hero-foot">
+                <nav class="tabs is-boxed">
+                    <div class="container">
+                        <ul>
+                            <li class="is-active"><a href="">{{ title }}</a></li>
+                            <li><a href="{{ link about-me }}">{{ get-title about-me }}</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </section>
+        <!-- content of the page -->
+        <div class="container">
+            {{ posts 10 }}
+        </div>
+        <!-- footer -->
+        <hr class="is-marginless" />
+        <footer class="footer is-paddingless">
+            <div class="container">
+                <p class="content has-text-centered is-small">
+                    PoweredBy <a href="https://github.com/0x3UH4224D/Glittery">Glittery</a>
+                </p>
+            </div>
+        </section>
+    </body>
 </html>
 ```
 
