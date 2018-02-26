@@ -92,6 +92,9 @@ Glittery uses [handlebars-rust](https://github.com/sunng87/handlebars-rust) libr
 ##### Helper Functions
 TODO: add all docs for all helper functions in this section
 
+**link [arguments]**
+
+
 #### Page's Resources
 Page's resources can be stored in `reserved` folder.
 

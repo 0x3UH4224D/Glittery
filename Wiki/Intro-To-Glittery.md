@@ -114,7 +114,6 @@ There are some rules to follow when you write these fundamental pages.
   - Post page's must have `partial.hbs` in addition to `template.hbs` and `info.toml`.
   - `template.hbs` and `partial.hbs` must call helper function `post-content`.
 
-    ####
 #### Creating Pages
 `glittery` makes it pretty easy to create a pages. let's say you want to create a new page called **My CV**, we simply run the following:
 ```
@@ -230,7 +229,7 @@ could used (such as the `date` or `tags` see [manual](./manual.md#configtoml-fil
 #### Post's Resources
 Just like pages, posts can have thier resources stored in `resources` subfolder, a tree files for post that have
 resources would look like this:
-```
+``` sh
 post-path
 └── intro-to-glittery
     ├── post.md
@@ -351,13 +350,155 @@ language = "en"
 # This is the page's title that will be used in the HTML file
 title = "Home"
 
+# Header content
 my-name = "Muhannad Alrusayni"
-my-short-name = "M.Alrusayni"
-# blog's topics
 intrest = "Programming ꞏ UI Design ꞏ Photography ꞏ 3D Moduleing"
 ```
 
 Now let's fillup `template.hbs` file, with the following:
+``` html
+<!doctype html>
+<html lang="{{ language }}">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- import Bootstrap CSS library -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        <!-- header -->
+        <div class="jumbotron jumbotron-fluid bg-dark py-0 m-0">
+            <div class="container text-center pt-5 pb-4">
+                <p class="h4 font-weight-bold text-light">{{ my-name }}</p>
+                <p class="h6 font-weight-light text-secondary">{{ intrest }}</p>
+            </div>
+            <div class="d-flex justify-content-center">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item"><a class="nav-link active" href="./">{{ title }}</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="{{ link about-me }}">{{ get-title about-me }}</a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- page content -->
+        <div class="container p-2">
+            {{ posts 10 }}
+        </div>
+        <!-- footer -->
+        <div class="container-fluid bg-light text-secondary">
+            <small class="">Powered by <a class="text-secondary" href="https://github.com/0x3UH4224D/Glittery">Glittery</a></small>
+        </div>
+    </body>
+</html>
+```
+
+As you can see, we use keys that we have defined in `info.toml` file such as language key:
+``` html
+<html lang="{{ language }}">
+```
+
+To get output like:
+``` html
+<html lang="en">
+```
+
+We also use some [**Helper Functions**](./manual.md#helper-functions) such as `link`, `get-title` and
+`posts`, we will explain each one of them in minutes.
+
+First let's talk about [**Helper Functions**](./manual.md#helper-functions) and what's thier purpose, helper functions
+helps you to do your work faster and easier as we will see in the following lines.
+
+The things comes after helper functions called arguments (or parameters), so in this line:
+``` html
+{{ get-title about-me }}
+```
+
+`about-me` is the argument that we pass to our helper function `get-title`.
+
+When we write helper function we actually call that help function to do specific task for us, each helper function does
+different task. As result they return a string for us.
+
+Now let's see what we will get when we call a `get-title` as we did in our `template.hbs`:
+``` html
+{{ get-title about-me }}
+```
+
+The result will be like this:
+``` html
+About Me
+```
+
+As you may guessed `get-title` return the page title when we pass the `page-id` or `post-id`.
+
+What about `link` ?, `link` is helper function that can take `page-id`, `css-id`, `post-id` or even `resource-id` as
+it's arguments and return the public link for it. And in our example we pass `page-id`:
+``` html
+{{ link about-me }}
+```
+
+The result will be something like:
+``` html
+./about-me/
+```
+
+This function is usefull since you don't need to write the link yourself you only pass id for the page, post, css or
+resource file and it will return a proper link for it, it also will make your `template.hbs` more readable.
+
+Finally we have `posts` helper function and it accept a number as its argument, it return a list of posts as HTML
+list, and this is done by useing `partial.hbs` file that belong to **Post** page to construct a that HTML list.
+
+By doing this we'll be able to include as much posts as we want in our **Home** page without haveing much trouble.
+
+Ee use it this way:
+``` html
+{{ posts 10 }}
+```
+
+And the returned value can not be told at this point until we write `partial.hbs` file for **Post** page.
+
+##### About Me Page
+Just like **Home** page we will first fillup `info.toml` file, we would write something like this:
+``` toml
+[config]
+# Change this to 'static' to get static page.
+type = "static"
+
+[content]
+language = "en"
+
+# Header content
+title = "About Me"
+my-name = "Muhannad Alrusayni"
+my-short-name = "M.Alrusayni"
+
+intrest = "Programming ꞏ UI Design ꞏ Photography ꞏ 3D Moduleing"
+description = """
+I can write what ever description that I want
+in multiline string
+"""
+email = "muhannad.alrusayni@gmail.com"
+skills = [ "Prgramming", "UI Design", "Photography", "3D Modeling" ]
+```
+
+As you can see we use an array as value for `skills` key, we will see how to handle arrays in our `template.hbs` file
+next.
+
+We also change the `type` of our page to `static`, this will tell `glittery` to construct HTML file for this page
+only once and use it for all client request. This method is faster and lighter on the server that will run `glittery`
+but some helper functions won't be so usefull, since thier use is shine in dynamic page but not static.
+
+Before we go and write our `template.hbs`, I'll add an image as resources to the page, so our **About Me**
+tree files would look like this:
+``` sh
+pages-path
+└── about-me
+    ├── template.hbs
+    ├── info.toml
+    └── resources
+        └── me.png
+```
+
+Now let's fillup our `template.hbs` file, with the following:
 ``` html
 <!doctype html>
 <html lang="{{ language }}">
@@ -393,8 +534,8 @@ Now let's fillup `template.hbs` file, with the following:
                 <nav class="tabs is-boxed">
                     <div class="container">
                         <ul>
+                            <li><a href="{{ link home }}">{{ get-title home }}</a></li>
                             <li class="is-active"><a href="">{{ title }}</a></li>
-                            <li><a href="{{ link about-me }}">{{ get-title about-me }}</a></li>
                         </ul>
                     </div>
                 </nav>
@@ -402,7 +543,7 @@ Now let's fillup `template.hbs` file, with the following:
         </section>
         <!-- content of the page -->
         <div class="container">
-            {{ posts 10 }}
+
         </div>
         <!-- footer -->
         <hr class="is-marginless" />
@@ -413,152 +554,6 @@ Now let's fillup `template.hbs` file, with the following:
                 </p>
             </div>
         </section>
-    </body>
-</html>
-```
-
-TODO: STOPED HERE
-
----
-
-As you can see, we use keys that we have defined in `info.toml` file such as language key:
-``` html
-<html lang="{{ language }}">
-```
-
-to get output like:
-``` html
-<html lang="en">
-```
-
-We also use some [**Helper Functions**](./manual.md#helper-functions) such as `use-css`, `link`, `page-title` and
-`posts`, we will explain each one of them briefly.
-
-First let's talk about [**Helper Functions**](./manual.md#helper-functions) and what's thier purpose, helper functions
-helps you to do a specific task, they usually make your life easier,
-
-The things comes after helper functions called argument (or parameters), so in this line:
-``` html
-{{ page-title home }}
-```
-`home` is the argument that we pass to our helper function `page-title`.
-
-When we right helper function we actually call that help function, and by do that we want it to do a task for us, and
-each helper function does different task. and as result they return a string for us.
-
-Now let's see what we will get when we call a `page-title` as we did in our `template.hbs`:
-``` html
-{{ page-title home }}
-```
-
-The result will be like this:
-``` html
-Home
-```
-
-When we use the same helper function, but with different argument, such as:
-``` html
-{{ page-title about-me }}
-```
-
-The result will different since the argument was different and we will get:
-``` html
-About Me
-```
-
-As you may guessed `page-title` return the page title when we pass the `page-id`.
-
-What about `link` ?, `link` is helper function that takes `page-id`, `css-id` or `post-id` and return the public link
-it. and in our example we pass `page-id`:
-``` html
-{{ link home }}
-```
-
-The result will be something like:
-``` html
-http://localhost/blog
-```
-
-This is usefull since you will not need to write the full link, and will make your `template.hbs` more readable.
-
-`use-css` is similar to link, but it only accept `css-id` as its argument, and we use it this way:
-``` html
-{{ use-css (css-file) }}
-```
-
-It will return something like this:
-``` html
-<link rel="stylesheet" href="./css/dark.css">
-```
-
-You may notice the braces `(` and `)`, this's called Subexpressions in
-[Handlebars templates](https://handlebarsjs.com/), by using subexpression we tell `glittery` to bring the value of the
-key `css-file` we defined in our `info.toml` file and pass it to the function, so it's equal to this line:
-``` html
-{{ use-css dark.css }}
-```
-
-You may say this is easier let's just use this way, and that's right. But it's good idea to spilt up the data out of the
-template files so you could easily change the css file used in `template.hbs` when you need to by changing it's value in
-`info.toml` insted of changing it in `template.hbs` since `info.toml` is more readable.
-
-It's also good idea to do so if you plane to share your page with people that doesn't understand HTML markup language.
-
-Finally we have `posts` helper function and it's accept a number as its argument, it return the a list of posts as HTML
-list, and this is done by useing `partial.hbs` file that belong to **Post** page to construct a that HTML list.
-
-By doing this we was able to include a list that contains our last 10 posts without haveing much trouble.
-
-In our example we use it this way:
-``` html
-{{ posts 10 }}
-```
-
-And the returned value can not be told until we write `partial.hbs` file for **Post** page.
-
-##### About Me Page
-Just like **Home** page we will first fillup `info.toml` file, and we could write something like this:
-``` toml
-[config]
-# Change this to 'static' to get static page.
-type = "static"
-
-[content]
-css-file = dark.css
-language = "en"
-
-title = "About Me"
-auther = "Muhannad Alrusayni"
-description = """
-I can write what ever description that I want
-in multiline string
-"""
-email = "muhannad.alrusayni@gmail.com"
-skills = [ "Prgramming", "UI Design", "Photography", "3D Modeling" ]
-```
-
-Now let's fillup our `template.hbs` file, with the following:
-``` html
-<!doctype html>
-<html lang="{{ language }}">
-    <head>
-        <meta charset="UTF-8" />
-        {{ use-css (css-file) }}
-        <title>{{ title }}</title>
-    </head>
-    <body>
-        <div class="nav-bar">
-            <ul class="nav-menu">
-                <li class="nav-item"><a class="nav-link" href="{{ link home }}">{{ page-title home }}</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ link about-me }}">{{ page-title about-me }}</a></li>
-            </ul>
-        </div>
-        <div>
-            <h1>I'm {{ auther }}</h1>
-            <p>{{ description }}</p>
-            <p>Skills: {{ list skills }}</p>
-            <p>Cantact Me: {{ email }}</p>
-        </div>
     </body>
 </html>
 ```
