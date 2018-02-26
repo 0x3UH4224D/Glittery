@@ -1,9 +1,25 @@
 # Intro To Glittery
-TODO
-## Blog Service
-Glittery provides a blogging service that helps you make your own blog in simple yet powerfull way. It gives you the
-ability to write custom pages such as `About Me` and `Search` pages using
-[Handlebars templates](https://handlebarsjs.com/), with a tons of helper functions.
+Glittery helps you to build, maintain and monitor your own website in simple yet powerfull way. Users can write any kind of website they want
+whether they want to create a Personal Blog, Media Library or even a Store.
+
+The web site and its content are created and organized using:
+- [HTML Markup Langauge](https://en.wikipedia.org/wiki/HTML) and [CSS](https://en.wikipedia.org/wiki/Cascading_Style_Sheets) 
+- [Handlebars templates](https://handlebarsjs.com/)
+- [CommonMark](http://commonmark.org/) (aka Markdown)
+- [Toml Minimal Language](https://github.com/toml-lang/toml)
+
+You don't need to know all of them to use Glittery, since some of them are optional and some other are used in themeing
+so you don't really need all of them to get started with Glittery
+
+We will learn how to use Glittery and how to create pages and manage them 
+in this tutorial
+
+It gives you the ability to write pages such
+as `Home`, `About Me` and `Search` pages using [Handlebars templates](https://handlebarsjs.com/), with a tons of helper
+functions.
+
+
+Pages 
 
 Glittery let its users write thier posts in [CommonMark](http://commonmark.org/) and convert these posts to HTML files,
 it also give its users the ability to customize each posts using
