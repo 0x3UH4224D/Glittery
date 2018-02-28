@@ -9,35 +9,36 @@ Every website root folder in Glittery should have the following structure:
 ├── website.toml
 └── .status
 ```
-
+---
 ## Overview
 Here is an overview for each directory and file.
 
-**`website.toml`**
+**`website.toml`** \
 This is where Glittery's websites stores thier information and configuration, and it's required. Users doesn't need to
 create this folder manually, `glittery` command will do this for you when you run `glittery new [website-id]` and fill
 it with the default values
 
-**`layouts`**
+**`layouts`** \
 Store templates that's used to construct a website. These templates specify how your website's pages will be
 rendered. There are two types of templates partial templates and single page templates.
 
-**`themes`**
+**`themes`** \
 Store CSS files that will be used by this website.
 
-**`pages`**
+**`pages`** \
 All pages for your website will live inside this directory, each page must have subfolder in `pages` folder. so if we
 have `about-me` page then it would be stored in `pages/about-me` folder.
 
-**`.status`**
+**`.status`** \
 This folder is created when we build a website for the first time, it contains the necessary files to keep track of the
 website, such as log files, visitor informations and many other things. Users doesn't need to create or edit this folder
 or it's content, since it's created and managed by Glittery itself.
 
-**`resources`**
+**`resources`** \
 All resources that is shared between pages in the website lives here, such as videos, images, pdf files or any other
 resource you want to use in your website.
 
+---
 ## website.toml File
 As we knew, this file contains all the configuration that effect the website. It also contains information about the
 website. It's written using [Toml Minimal Language](https://github.com/toml-lang/toml).
@@ -51,7 +52,7 @@ inside this table:
 |--------------|-----------------|----------|---------------------|-------------------------------------------------------------------|
 | title        | String          | Yes      | `website-id`        | Title for the website                                             |
 | summary      | String          | No       |                     | Summary for the website                                           |
-| author       | String          | No       |                     | The author for the website                                        |
+| author       | String          | No       |                     | The author name for this website                                  |
 | author-email | String          | No       | author@example.org  | Your email address where problems with website should be e-mailed |
 | categories   | Array of String | No       | [ "Uncategorized" ] | Categories this website belong to                                 |
 | tags         | Array of String | No       | [ "Untagged" ]      | Tags for the website                                              |
@@ -76,6 +77,7 @@ The `[server-config]` table is meant to contain the configuration for the server
 | host     | String | No       | localhost     | Listen at the given hostname              |
 | base-url | String | No       |               | Serve the website from the given base URL |
 
+---
 ## layouts Folder
 This folder contains all the templates that is used to construct a website. There are two types of template, `partial`
 template and `base` template. Every template must be in subfolder, that subfolder have the following structure:
@@ -90,6 +92,7 @@ template and `base` template. Every template must be in subfolder, that subfolde
 ...
 ```
 
+---
 ### info.toml File
 This file is similar `website.toml` file, but it's for the layout not the website, it only have two tables, `[config]`
 and `[extra]`.
@@ -105,9 +108,11 @@ inside this table:
 The `[extra]` table is meant to contain key/value pairs that is defined by the creator of the template, and these
 key/value pairs can be accessed from `template.hbs` file.
 
+---
 ### resources Folder
-This folder stores resources that is only related to this template, can accessed from `template.hbs` file.
+This folder stores resources that is only related to this template, and can be accessed from `template.hbs` file.
 
+---
 ### template.hbs File
 The main file that every template must have, it's written using [Handlebars templates](https://handlebarsjs.com/), it's
 meant to describe how to render an HTML page by accessing the template files and the page files
@@ -130,6 +135,9 @@ gain access to two sources:
 - `info.toml` that belong to the `Base Template` that use this partial template; You can access its content by writing
   something like `{{ base.KEY }}`.
 
+TODO: Explain what is accessable to templates
+
+---
 #### Helpers
 [Handlebars templates](https://handlebarsjs.com/) have something called helpers, thier purpose is to make it easy to you
 to write good template, Glittery ships with a lot of usefull helpers that you can use when you write your templates.
@@ -152,15 +160,114 @@ value will be empty text.
 
 TODO: Add more helpers.
 
+---
 ## pages Folder
+This folder contains all pages in the website, Every website must have at less one page wich is `Home` page, this page
+is the main page for the website and its special page.
+
+Special pages are just like any normal page but the only different is that Glittery handle them a bit more differently.
+Here are all the special pages that website can have:
+
+`home` \
+The Home page for the website, it's the first page that visitor see when they visit your website.
+
+
+`url-note-found` \
+This page will be used when visitor try to visit URL that doesn't exist.
+
+Every page in Glittery must be in subfolder, that subfolder can have the following structure:
+
+``` sh
+.                         # Website root folder
+├── pages                 # Pages root folder
+│   └── page              # Page folder, its name is the 'page-id'
+│       ├── content.md    # The content of the page written in Markdown
+│       ├── info.toml     # info and config for this page
+│       ├── resources     # Resources for this page
+│       └── .status       # info about this page goes here
+```
+
+The minimal structure is:
+
+``` sh
+.                         # Website root folder
+├── pages                 # Pages root folder
+│   └── page              # Page folder, its name is the 'page-id'
+│       ├── info.toml     # info and config for this page
+│       └── .status       # info about this page goes here
+```
+
+---
+### content.md File
+This file is written using [CommonMark](http://commonmark.org/) (aka Markdown) and meant to contain big piece of content
+that will goes into the template. Pages that use simple template likely will want use this file to put thier content,
+such as `Posts`, `Docs` and `Articals` pages. Pages that use complex template such as `Home`, `News` and `Contact us`
+will likely to put thier content inside `info.toml` file.
+
+Glittery uses two CommonMark extensions wich are Tables and Footers, so users can write tables and footers in this file,
+one more thing is you can use the helper `link` that we talked about in [Helpers chapter](./manual.md#helpers) to get
+link for resouces in this website.
+
+This file will be accessable from `Base Template`s by writing `{{ content }}`. Before that it will go through two
+phases:
+1. This file will be passed to Handlebars preprocessor to replace any use for `link` helper with a proper URL.
+2. The result of the first step will be passed to CommonMark preprocessor to produce and HTML chunk that can be used by
+   template.
+
+So when you write `{{ content }}` in your template you will get the result of the second phase two.
+
+---
+### info.toml Files
+This file is similar to other `.toml` files we have seen earlier, but it's for pages, there are two tables,
+`[info]`, `[config]` and `[extra]`.
+
+The `[info]` table is meant to contain the information for the page, here is all key/value pairs that can be used inside
+this table:
+
+| Key Name     | Type                                                  | Required | Default Value        | commecnt                       |
+|--------------|-------------------------------------------------------|----------|----------------------|--------------------------------|
+| title        | String                                                | Yes      | `page-id`            | Page title                     |
+| date         | `Offset Date-Time`, `Local Date-Time` or `Local Date` | Yes      |                      | Page creation date             |
+| summary      | String                                                | No       |                      | Page summary                   |
+| author       | String                                                | No       | website.author       | The author name for this page  |
+| author-email | String                                                | No       | website.author-email | The author email for this page |
+| categories   | Array of String                                       | No       | [ "Uncategorized" ]  | Categories this page belong to |
+| tags         | Array of String                                       | No       | [ "Untagged" ]       | Tags for the page              |
+|              |                                                       |          |                      |                                |
+
+
+The `[config]` table is meant to contain the configuration for the page, here is all key/value pairs that can be used
+inside this table:
+
+| Key Name      | Type    | Required | Default Value | commecnt                                                                                        |
+|---------------|---------|----------|---------------|-------------------------------------------------------------------------------------------------|
+| draft         | Boolean | No       | false         | whether this page is draft or not                                                               |
+| archived      | Boolean | No       | false         | whether this page is archived or not                                                            |
+| layout        | String  | Yes      |               | Page template, write `layout-id` here.                                                                                   |
+| language-code | String  | No       | en            | Page language, (list of [language code](https://www.w3schools.com/tags/ref_language_codes.asp)) |
+|               |         |          |               |                                                                                                 |
+
+---
+### resources Folder
 TODO
+
+---
+### .status Folder
+TODO
+
+---
 ## resouces Folder
-TODO
+This folder stores global resources that is shared in the website, and can be accessed from all it's content.
+
+---
 ## themes Folder
 TODO
+
+---
 ## .status Folder
 TODO
 
+---
 # Glittery Command Line Interface
 Glittery have a powerfull Command-Line interface, it does all what you need to create and build a website, the following
 are all commands you can use with `glittery` and a thier arguments with short description for thier purpose.
@@ -182,7 +289,7 @@ Commands:
     clean         Remove all .status directories in current website
     new           Create a new website, page, layout or theme folder with all necessary files
     remove        Remove a page, layout or theme folder with all its related files
-    run           Build the website and start a server for it
+    start         Build the website and start a server for it
     bench         Run a benchmarks for the website
     info          Print information about the current website's or specific page in it 
     set           Set a new value for specific key in the configuration file website.toml
@@ -191,107 +298,42 @@ Commands:
 Run 'glittery help <command>' for more information on a specific command.
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-# Introduction
-This manual will explain Glittery Services in details, if this your first time with Glittery have look at
-[Intro To Glittery](./Intro-To-Glittery) since it provides complete examples and HowTo things. This manual will go in
-more details with a few short examples so you need to have an idea of what's going on with Glittery to understand this
-manual.
-
-### Pages
-Glittery construct HTML files for pages that have folder in `pages-path`, here are all files that can be stored in the
-page's folder:
-``` sh
-pages-path
-└── about-me                  # The page's folder, it's name is the 'id' for this page
-    ├── .status               # a folder that contains all other necessary files that belong to this page
-    |   ├── data.toml             # file that contain all data that belong to this page
-    |   └── page.html             # the HTML page that have been constructed from 'info.toml' and 'template.hbs'
-    ├── partial.hbs           # handlebars file that can be used as partial in other 'template.hbs' files
-    ├── template.hbs          # handlebars file that will be used with info.toml to construct HTML page
-    ├── info.toml             # Toml file that contains the configuration for HTML page and its content
-    └── resources             # a folder that contains all resources belong to this page
-```
-
-Page's `page-id` can be any unicode character except those are not considered valid by
-[Identifiers in handlebars](https://handlebarsjs.com/expressions.html):
-`Whitespace` `!` `"` `#` `%` `&` `'` `(` `)` `*` `+` `,` `.` `/` `;` `<` `=` `>` `@` `[` `\` `]` `^` ``` ` ``` `{` `|` `}` `~`
-
-Glittery will ignore pages with `page-id` that contain any of them.
-
-Only `template.hbs`, `partial.hbs` and `info.toml` are required, `resources` folder are optional, `.status` folder will
-be created with the first build for the page.
-
-#### info.toml File
-This file contains the configuration and the content for HTML page, it's written using
-[Toml Minimal Language](https://github.com/toml-lang/toml).
-
-There are two tables `[config]` and `[content]`. the `[content]` table can have any key/value pairs. while the
-`[config]` table can have the following kay/value pairs:
-
-| Key Name | Type    | Required | Default Value | commecnt                                                                                                                                                                                                                                   |
-|----------|---------|----------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| publish  | boolean | Yes      | false         | If this is `false` this page won't be published, set it to `true` if you want it to be published                                                                                                                                           |
-| url      | String  | No       | `page-id`     | This is the url for this page, so value like 'about-me' would have url like http://localhost/blog/about-me                                                                                                                                 |
-| type     | String  | No       | dynamic       | This value tell Glittery if this page is 'static' or 'dynamic', set this value to 'static', if you want 'glittery' build the page only when the page's files modified, otherwise this page will be build each time when visitor request it |
-
-The key name `page-id` is already reserved in `[config]`, and it's value is the page id (the page folder's name).
-
-Key name may be any unicode character except those considered invalid characters by [Identifiers in
-handlebars](https://handlebarsjs.com/expressions.html). Glittery will ignore any key that have
-invalid character and it's value won't be accessable by `template.hbs` and `partial.hbs`.
-
-#### template.hbs & include.hbs Files
-These files are written using [Handlebars templates](https://handlebarsjs.com/) with `.hbs` extension.
-
-These two files have the same purpose wich is describing how the values in `info.toml` file will appaer in HTML page,
-but they are used in different way, `template.hbs` together with `info.toml` used to construct a standalone HTML page,
-while `partial.hbs` together with `info.toml` used to create an HTML chunk that can be embedded into other pages
-in thier `template.hbs` file, and this could be done by partial feature in handlebars.
-
-Glittery uses [handlebars-rust](https://github.com/sunng87/handlebars-rust) library, although it has some
-[limitation](https://github.com/sunng87/handlebars-rust#limitations) but this may change in the future.
-
-##### Helper Functions
-TODO: add all docs for all helper functions in this section
-
-**link [arguments]**
-
-
-#### Page's Resources
-Page's resources can be stored in `reserved` folder.
-
-## Posts
+---
+## build Command
 TODO
 
-### Publishing Posts
+---
+## check Command
 TODO
 
-### Deleteing Posts
+---
+## clean Command
 TODO
 
-### Renaming Posts
+---
+## new Command
 TODO
 
-### config.toml File
+---
+## remove Command
+TODO
 
-Here is a full lists of key/value pairs that `glittery` understand. \
+---
+## start Command
+TODO
 
-`[config]` table:
-| Key Name | Type            | Required | Default Value | commecnt                                                                                         |
-|----------|-----------------|----------|---------------|--------------------------------------------------------------------------------------------------|
-| publish  | boolean         | Yes      | false         | If this is `false` this post won't be published, set it to `true` if you want it to be published |
-| date     | Local Date      | Yes      | current date  | The publishing date for this post                                                                |
-| tags     | Array of String | No       | [ "Untaged" ] | These tags will be used from search engine in this blog, so posts can be filtered using them     |
+---
+## bench Command
+TODO
 
-The key name `post-id` is already reserved in `[config]` table, and it's value is the post id (the post folder's name).
+---
+## info Command
+TODO
+
+---
+## set Command
+TODO
+
+---
+## get Command
+TODO
