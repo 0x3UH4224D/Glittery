@@ -1,4 +1,4 @@
-# Directory Structure
+# Website Directory Structure
 Every website root folder in Glittery should have the following structure:
 ``` sh
 .
@@ -45,15 +45,15 @@ There are several tables we can use in this file, `[info]`, `[config]`, `[server
 The `[info]` table is meant to contain the information for the website, here is all key/value pairs that can be used
 inside this table:
 
-| Key Name     | Type                                                  | Required | Default Value       | commecnt                                                          |
-|--------------|-------------------------------------------------------|----------|---------------------|-------------------------------------------------------------------|
-| title        | String                                                | Yes      | `website-id`        | Title for the website                                             |
-| date         | `Offset Date-Time`, `Local Date-Time` or `Local Date` | No       |                     | website creation date                                             |
-| summary      | String                                                | No       |                     | Summary for the website                                           |
-| author       | String                                                | No       |                     | The author name for this website                                  |
-| author-email | String                                                | No       |                     | Your email address where problems with website should be e-mailed |
-| categories   | Array of String                                       | No       | [ "Uncategorized" ] | Categories this website belong to                                 |
-| keywords     | Array of String                                       | No       |                     | Keywords for the website                                          |
+| Key Name     | Type                                                  | Required | Default Value         | commecnt                                                          |
+|--------------|-------------------------------------------------------|----------|-----------------------|-------------------------------------------------------------------|
+| title        | String                                                | Yes      | `website-id`          | Title for the website                                             |
+| date         | `Offset Date-Time`, `Local Date-Time` or `Local Date` | No       |                       | website creation date                                             |
+| summary      | String                                                | No       |                       | Summary for the website                                           |
+| author       | String                                                | No       |                       | The author name for this website                                  |
+| author-email | String                                                | No       |                       | Your email address where problems with website should be e-mailed |
+| categories   | Array of String                                       | No       | `[ "Uncategorized" ]` | Categories this website belong to                                 |
+| keywords     | Array of String                                       | No       |                       | Keywords for the website                                          |
 
 TODO: Add full description for each key and its purpose
 
@@ -75,8 +75,8 @@ The `[server-config]` table is meant to contain the configuration for the server
 
 | Key Name | Type   | Required | Default Value | commecnt                                  |
 |----------|--------|----------|---------------|-------------------------------------------|
-| port     | number | No       | 8080          | Listen on the given port                  |
-| host     | String | No       | localhost     | Listen at the given hostname              |
+| port     | number | No       | `8080`        | Listen on the given port                  |
+| host     | String | No       | `localhost`   | Listen at the given hostname              |
 | base-url | String | No       |               | Serve the website from the given base URL |
 
 TODO: Add full description for each key and its purpose
@@ -107,7 +107,7 @@ The minimal structure is:
 ```
 
 ### info.toml File
-This file is similar `website.toml` file, but it's for the layout not the website, it only have two tables, `[config]`
+This file is similar to `website.toml` file, but it's for the layout not the website, it only have two tables, `[config]`
 and `[extra]`.
 
 The `[config]` table is meant to contain the configuration for the layout, here is all key/value pairs that can be used
@@ -115,8 +115,10 @@ inside this table:
 
 | Key Name | Type    | Required | Default Value | commecnt                                  |
 |----------|---------|----------|---------------|-------------------------------------------|
-| type     | String  | Yes      | base          | Type of the template                      |
-| dynamic  | Boolean | No       | false         | Whether the template is dynamic or static |
+| type     | String  | Yes      | `base`        | Type of the template                      |
+| dynamic  | Boolean | No       | `false`       | Whether the template is dynamic or static |
+
+TODO: Add full description for each key and its purpose
 
 The `[extra]` table is meant to contain key/value pairs that is defined by the creator of the template, and these
 key/value pairs can be accessed from `template.hbs` file.
@@ -126,7 +128,7 @@ This folder stores resources that is only related to this template, and can be a
 
 ### template.hbs File
 The main file that every template must have, it's written using [Handlebars templates](https://handlebarsjs.com/), it's
-meant to describe how to render an HTML page by accessing the template files and the page files
+meant to tell Glittery how to generate HTML pages from the website content.
 
 **`Base Template`**
 This is the main type of the templates, it's meant to build a single HTML page. You gain access to three sources:
@@ -231,15 +233,15 @@ This file is similar to other `.toml` files we have seen earlier, but it's for p
 The `[info]` table is meant to contain the information for the page, here is all key/value pairs that can be used inside
 this table:
 
-| Key Name     | Type                                                  | Required | Default Value        | commecnt                       |
-|--------------|-------------------------------------------------------|----------|----------------------|--------------------------------|
-| title        | String                                                | Yes      | `page-id`            | Page title                     |
-| date         | `Offset Date-Time`, `Local Date-Time` or `Local Date` | No       |                      | Page creation date             |
-| summary      | String                                                | No       |                      | Page summary                   |
-| author       | String                                                | No       | website.author       | The author name for this page  |
-| author-email | String                                                | No       | website.author-email | The author email for this page |
-| categories   | Array of String                                       | No       | [ "Uncategorized" ]  | Categories this page belong to |
-| tags         | Array of String                                       | No       | [ "Untagged" ]       | Tags for the page              |
+| Key Name     | Type                                                  | Required | Default Value         | commecnt                       |
+|--------------|-------------------------------------------------------|----------|-----------------------|--------------------------------|
+| title        | String                                                | No       | website.title         | Page title                     |
+| date         | `Offset Date-Time`, `Local Date-Time` or `Local Date` | No       |                       | Page creation date             |
+| summary      | String                                                | No       |                       | Page summary                   |
+| author       | String                                                | No       | website.author        | The author name for this page  |
+| author-email | String                                                | No       | website.author-email  | The author email for this page |
+| categories   | Array of String                                       | No       | `[ "Uncategorized" ]` | Categories this page belong to |
+| tags         | Array of String                                       | No       | `[ "Untagged" ]`      | Tags for the page              |
 
 TODO: Add full description for each key and its purpose
 
@@ -248,10 +250,10 @@ inside this table:
 
 | Key Name      | Type    | Required | Default Value | commecnt                                                                                        |
 |---------------|---------|----------|---------------|-------------------------------------------------------------------------------------------------|
-| draft         | Boolean | No       | false         | whether this page is draft or not                                                               |
-| archived      | Boolean | No       | false         | whether this page is archived or not                                                            |
-| layout        | String  | Yes      |               | Page template, write `layout-id` here.                                                                                   |
-| language-code | String  | No       | en            | Page language, (list of [language code](https://www.w3schools.com/tags/ref_language_codes.asp)) |
+| draft         | Boolean | No       | `false`       | whether this page is draft or not                                                               |
+| archived      | Boolean | No       | `false`       | whether this page is archived or not                                                            |
+| layout        | String  | Yes      |               | Page template, write `layout-id` here.                                                          |
+| language-code | String  | No       | `en`          | Page language, (list of [language code](https://www.w3schools.com/tags/ref_language_codes.asp)) |
 
 TODO: Add full description for each key and its purpose
 
@@ -320,6 +322,10 @@ So the `page-id` would be `about-me` in this case. The same concept for other co
 ```
 ## Visiblity Scope
 TODO
+
+## Website map
+TODO
+
 # Glittery Command Line Interface
 Glittery have a powerfull and user-friendly Command-Line interface, it does all what you need to create and build a
 website, the following are all commands you can use with `glittery` and a thier arguments with short description for
