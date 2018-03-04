@@ -13,26 +13,26 @@ Every website root folder in Glittery should have the following structure:
 ## Overview
 Here is an overview for each directory and file.
 
-**`website.toml`** \
+**`website.toml`**  
 This is where Glittery's websites stores thier information and configuration, and it's required.
 
-**`layouts`** \
+**`layouts`**  
 Store templates that's used to construct the website. These templates specify how your website's pages will be
 rendered.
 
-**`themes`** \
+**`themes`**  
 Store CSS files that will be used by this website.
 
-**`pages`** \
+**`pages`**  
 All pages for the website will live inside this directory, each page must have subfolder in `pages` folder. so if we
 have `about-me` page then it would be stored in `pages/about-me` folder.
 
-**`.status`** \
+**`.status`**  
 This folder is created when a website get build for the first time, it contains the necessary files to keep track of the
 website, such as log files, visitors informations and many other things. Users doesn't need to create or edit this
 folder or it's content, since it's created and managed by Glittery itself.
 
-**`resources`** \
+**`resources`**  
 All resources that is shared between pages in the website lives here, such as videos, images, pdf files or any other
 resource you want to use in your website.
 
@@ -127,10 +127,12 @@ key/value pairs can be accessed from `template.hbs` file.
 This folder stores resources that is only related to this template, and can be accessed from `template.hbs` file.
 
 ### template.hbs File
-The main file that every template must have, it's written using [Handlebars templates](https://handlebarsjs.com/), it's
+This is the main file that every template must have, it's written using [Handlebars templates](https://handlebarsjs.com/), it's
 meant to tell Glittery how to generate HTML pages from the website content.
 
-**`Base Template`**
+There are two templates type that Glittery supports:
+
+`Base Template`  
 This is the main type of the templates, it's meant to build a single HTML page. You gain access to three sources:
 - `info.toml` that belong to this template; You can access its content by writing something like
   `{{ template-id.KEY }}`.
@@ -139,9 +141,9 @@ This is the main type of the templates, it's meant to build a single HTML page. 
 - `content.md` that belong to the page that use this template; You can access its content by writing something like
   `{{ content }}`.
 
-**`Partial Template`**
+`Partial Template`  
 This type of template is meant to be included into `Base Templates`, it's used to split common parts in `Base Template`s
-so we can reuse this part in more than one `Base Template`. A good example is header and footer partial template. You
+so we can reuse this part in more than one `Base Template`. A good example is header and footer partial templates. You
 gain access to two sources:
 - `info.toml` that belong to this template (the partial template file); You can access its content by writing something
   like `{{ template-id.KEY }}`.
@@ -157,14 +159,14 @@ to write good template, Glittery ships with a lot of usefull helpers that you ca
 
 The following are helpers that come with Glittery and thier documentation.
 
-`include partial-id` \
+`include partial-id`  
 This helper is used by Base Templates to include Partial Templates in thier `template.hbs` file. The arguments should be
 `partial-id`.
 
 If the partial-id doesn't exist, Glittery will add warning to the log files, and the Base template will not be useable
 since it doesn't find partial template that it need.
 
-`link id` \
+`link id`  
 This helper return relaitve link for pages and resouces in the website. The arguments should be `page-id`, `resouces-id`
 and `css-id`.
 
@@ -180,10 +182,10 @@ is the main page for the website and its special page.
 Special pages are just like any normal page but the only different is that Glittery handle them a bit more differently.
 Here are all the special pages that website can have:
 
-`home` \
+`home`  
 The Home page for the website, it's the first page that visitor see when they visit your website.
 
-`url-note-found` \
+`url-note-found`  
 This page will be used when visitor try to visit URL that doesn't exist.
 
 Every page in Glittery must be in subfolder, that subfolder can have the following structure:
@@ -300,23 +302,23 @@ So the `page-id` would be `about-me` in this case. The same concept for other co
 ``` sh
 .                         # Website root folder
 ├── layouts
-│   ├── about-me          # 'layout-id' = 'about-me'
+│   ├── about-me          # layout-id = 'about-me'
 │   │   ├── resources
-│   │   │   └── me.png    # 'resouce-id' = 'me.png'
+│   │   │   └── me.png    # resouce-id = 'me.png'
 │   │   └── ...
-│   └── home              # 'layout-id' = 'home'
+│   └── home              # layout-id = 'home'
 │       └── ...
 ├── pages
-│   ├── about-me          # 'page-id' = 'about-me'
+│   ├── about-me          # page-id = 'about-me'
 │   │   └── ...
-│   └── home              # 'page-id' = 'home'
+│   └── home              # page-id = 'home'
 │       └── ...
 ├── resouces
-│   └── logo.png          # 'resouce-id' = 'logo.png'
+│   └── logo.png          # resouce-id = 'logo.png'
 ├── themes
-│   ├── light-moon        # 'theme-id' = 'light-moon'
+│   ├── light-moon        # theme-id = 'light-moon'
 │   │   └── ...
-│   └── sky-waves         # 'page-id' = 'home'
+│   └── sky-waves         # page-id = 'home'
 │       └── ...
 ...
 ```
