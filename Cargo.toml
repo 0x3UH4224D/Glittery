@@ -5,4 +5,24 @@ authors = ["Muhannad Alrusayni <0x3UH4224D@gmail.com>"]
 license = "GPL3"
 
 [dependencies]
-iron = "0.6.0"
+error-chain = "^0.11"
+
+clap = "^2.30"
+
+nickel = "^0.10"
+
+handlebars = "^0.32"
+serde = "^1.0"
+serde_derive = "^1.0"
+serde_json = "^1.0"
+serde_yaml = "^0.7"
+yaml-rust = "^0.4"
+
+rss = "^1.3"
+
+chrono = "^0.4"
+
+notify = "^4.0"
+
+slog = "^2.1"
+
